@@ -1,0 +1,17 @@
+{
+  "name": "AI 10 · Hành trình 12 tiết",
+  "short_name": "AI 10",
+  "description": "Chuyên đề Trí tuệ nhân tạo lớp 10 — 12 tiết cốt lõi",
+  "lang": "vi",
+  "start_url": "./index.html#ban-do",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#0b1330",
+  "theme_color": "#0b1330",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
