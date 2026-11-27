@@ -192,6 +192,20 @@ input[type=range]{padding:0;border:0;background:transparent;accent-color:var(--n
   .toast{bottom:calc(84px + env(safe-area-inset-bottom))}
   .dn{padding:16px;margin-top:0}.qr-the{flex-direction:column;text-align:center}
 }
+.o-vai{padding:10px 14px;margin-bottom:12px}.o-vai .chip{font-size:14px}
+.o-ghinho{border-color:rgba(77,212,255,.45)}.ghinho-ds{margin:4px 0 8px;padding-left:22px;font-size:17px;line-height:1.55}
+.o-ktn{border-color:rgba(124,140,255,.55)}.ktn-cau{margin:8px 0 12px}.ktn-pa{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px;margin-top:6px}
+.ktn-nut{text-align:left;padding:10px 12px;border-radius:12px;border:2px solid rgba(255,255,255,.18);background:rgba(255,255,255,.05);color:var(--chu);font:inherit;cursor:pointer}
+.ktn-nut.chon{border-color:var(--chinh);background:rgba(124,140,255,.22)}.ktn-nut.dung{border-color:#34d399;background:rgba(52,211,153,.2)}.ktn-nut.sai{border-color:#f43f5e;background:rgba(244,63,94,.18)}
+.o-guiled{border-color:rgba(245,158,11,.5)}.bt-duyet{margin:8px 0}
+.led-thanh{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:12px}
+.led-ktn{margin:14px 0 18px}.led-ktn-hoi{font-size:22px;margin-bottom:6px}.led-ktn .led-cot{display:inline-block;width:calc(100% - 110px);vertical-align:middle}.led-pt{font-size:30px;margin-left:12px}
+.led-pr{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px}.led-pr-the{display:flex;flex-direction:column;gap:6px;text-align:left;padding:12px;border-radius:14px;border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.06);color:var(--chu);font:inherit;font-size:16px;cursor:pointer}
+.bang-bt input,.bang-bt select{padding:6px 8px;font-size:14px;min-width:110px}.o-btvn{border-color:rgba(255,209,102,.45)}
+.man-chua{position:fixed;inset:0;z-index:80;background:linear-gradient(160deg,#0b1330,#16245a);display:flex;flex-direction:column;padding:18px 26px;outline:none}
+.chua-dau{display:flex;gap:14px;align-items:center;justify-content:space-between;font-size:20px}.chua-dau span{font-size:22px;color:var(--nhan1);font-weight:800}
+.chua-noi{flex:1;overflow:auto;margin:14px 0;display:flex;flex-direction:column;gap:14px}.chua-bai{background:#f7f9ff;color:#1b2550;border-radius:16px;padding:20px 24px;font-size:26px;line-height:1.55}
+.chua-anh{max-width:100%;max-height:52vh;border-radius:14px;background:#fff}.chua-goi{font-size:19px;color:#ffe08a}.chua-duoi{display:flex;justify-content:space-between;align-items:center}
 footer{text-align:center;color:var(--mo);font-size:13px;padding:20px}
 @media (max-width:980px){.bai{grid-template-columns:1fr}.ben{position:static}nav.thanh .nh{display:none}.luoi{grid-template-columns:repeat(2,1fr)}.hero{grid-template-columns:1fr}.hai,.ba,.kpi{grid-template-columns:1fr}}
 @media print{header,.draft,footer,.ben{display:none}}
@@ -452,6 +466,7 @@ function moTiet(t){
    </aside>`);
   const sân = tao(`<div class="san"></div>`);
   const khung = tao(`<div class="bai"></div>`); khung.append(ben, sân); m.appendChild(khung); ben.appendChild(oAnh(t));
+  const vai = oVai(t); if (vai) sân.appendChild(vai);
   const nv = BAI[t]();
   nv.forEach((k,i)=>{
     const li = tao(`<li class="${r.nv[i]?"ok":""}"><i>${r.nv[i]?"✓":i+1}</i><span>${k.ten}</span></li>`); $("#dsNv").appendChild(li);
@@ -461,6 +476,10 @@ function moTiet(t){
         if(du && !rr.xong){ rr.xong=1; rr.luc=new Date().toISOString(); luuDB(); banPhao(200); bao(`⭐ Hoàn thành Tiết ${t}!`); $("#loiRobot").textContent="Tuyệt vời! Em đã hoàn thành tiết này. Sang tiết sau thôi!"; guiTienDo(t, "Cả tiết", "hoàn thành"); themSao(`T${t}-xong`, `Hoàn thành Tiết ${t}`, 2); }
         } }, i);
   });
+  if (t === 2 || t === 3) sân.appendChild(oGuiLED(t));
+  if (GHI_NHO[t]) sân.appendChild(oGhiNho(t));
+  if (KTN[t]) sân.appendChild(oKTN(t));
+  if (BTVN[t]) sân.appendChild(oBTVN(t));
   di("bai", true);
   location.hash = "t"+t;
 }
@@ -529,7 +548,7 @@ const tiet12Toan = () => { const mau = () => Array.from({ length: 11 }, (_, i) =
 
 /* ---- TIẾT 1 ---- */
 BAI[1] = () => [
- {ten:"Khởi động: Lan, Nam và FaceID", lam(el,xong){
+ {ten:"Khởi động: cùng nhập vào — ba kiểu kết quả", lam(el,xong){
    el.appendChild(tao(`<div><div class="tinhhuong">Lan nhập mô tả để có <b>tấm thiệp sinh nhật</b> có hình và lời chúc; Nam nhập mô tả để có <b>đoạn nhạc vui nhộn</b>. Máy tạo ra tranh, nhạc <b>mới chưa từng có</b>. Còn <b>FaceID</b> chỉ so ảnh mặt xem có khớp hay không.</div>
    <div class="hai" style="margin-top:10px">
     <div class="khung"><h3>🔐 AI phân loại / dự đoán</h3>
@@ -544,32 +563,38 @@ BAI[1] = () => [
       <g><rect x="192" y="14" width="120" height="92" rx="14" fill="#3b2a7a"/><circle cx="222" cy="44" r="12" fill="#ffd166"/><path d="M202 96l30-30 22 18 18-14 30 26z" fill="#b197fc"/><text x="270" y="40" font-size="20">✨</text></g></svg>
      <div class="hang"><button class="nut nho vang" id="t1Tao">Tạo lời chúc</button><span class="mo" style="font-size:14px">bấm nhiều lần</span></div>
      <div class="console" id="t1Kq2">Cùng một câu lệnh → mỗi lần một kết quả mới.</div></div>
-   </div><p class="mo" style="font-size:14px">(Mô phỏng để thấy khác biệt — không phải AI thật.)</p></div>`));
+   </div>
+   <div class="khung" style="margin-top:12px"><h3>🧭 AI dự đoán / gợi ý</h3><div class="hang"><select id="t1Duong" style="width:auto"><option value="0">5 km · 6 giờ sáng (đường vắng)</option><option value="1">5 km · 17 giờ (giờ tan tầm)</option><option value="2">12 km · 10 giờ sáng</option></select><button class="nut nho" id="t1Doan">Ước tính thời gian</button></div>
+     <div class="console" id="t1Kq3">Ứng dụng bản đồ ước lượng một con số từ dữ liệu cũ (lượng xe, giờ đi…).</div></div>
+   <p class="mo" style="font-size:14px">(Mô phỏng để thấy khác biệt — không phải AI thật.) Ghi nhớ: <b>phân loại</b> gán nhãn có sẵn · <b>dự đoán</b> ước lượng một kết quả · <b>tạo sinh</b> tạo ra nội dung mới.</p></div>`));
    const loi = ["Chúc cậu tuổi mới thật nhiều niềm vui và luôn rực rỡ như nắng sớm! 🎂","Sinh nhật vui vẻ nhé! Mong cậu học giỏi, khỏe mạnh và mãi là bạn thân của tớ.","Tuổi mới, ước mơ mới — tớ luôn ở đây cổ vũ cậu! 🎉","Chúc mừng sinh nhật! Cảm ơn cậu vì những ngày đi học thật vui.","Một tuổi mới đầy bất ngờ thú vị, cậu nhé! 🌟","Chúc cậu luôn cười tươi, đạt mọi mục tiêu năm lớp 10!"];
-   let lanLoc = 0, lanTao = 0, k=-1;
+   let lanLoc = 0, lanTao = 0, lanDoan = 0, k=-1;
+   $("#t1Doan",el).onclick=()=>{ lanDoan++; const v=+$("#t1Duong",el).value, p=[12,24,27][v]; $("#t1Kq3",el).textContent += `\nLần ${lanDoan}: khoảng ${p} phút`; am(true); kiem(); };
    $("#t1Loc",el).onclick=()=>{ lanLoc++; const rac = $("#t1Thu",el).selectedIndex===0; $("#t1Kq1",el).textContent += `\nLần ${lanLoc}: ${rac?"THƯ RÁC 🚫":"Thư thường ✅"}`; am(true); kiem(); };
    $("#t1Tao",el).onclick=()=>{ lanTao++; let j; do{ j=Math.floor(Math.random()*loi.length);}while(j===k); k=j; $("#t1Kq2",el).textContent = `Lần ${lanTao}: ${loi[j]}`; am(true); kiem(); };
-   function kiem(){ if(lanLoc>=2 && lanTao>=2) xong(); }
+   function kiem(){ if(lanLoc>=1 && lanTao>=2 && lanDoan>=1) xong(); }
  }},
- {ten:"Xếp ứng dụng vào đúng nhóm", lam(el,xong){
-   el.appendChild(tao(`<p>Chạm một thẻ rồi chạm vào nhóm (hoặc kéo thả).</p>`));
-   troPhanLoai(el,{thung:[{id:"p",ten:"AI hẹp – phân loại, dự đoán (kết quả cố định)",e:"🔐",mau:"#4dabf7"},{id:"s",ten:"AI tạo sinh (tạo nội dung mới)",e:"🎨",mau:"#b197fc"}],
+ {ten:"Xếp 9 ứng dụng theo tính năng", lam(el,xong){
+   el.appendChild(tao(`<p>Chạm một thẻ rồi chạm vào nhóm (hoặc kéo thả). Đọc kĩ <b>đầu vào → đầu ra</b> trên từng thẻ.</p>`));
+   troPhanLoai(el,{thung:[{id:"p",ten:"Phân loại / nhận dạng (gán nhãn có sẵn)",e:"🏷️",mau:"#4dabf7"},{id:"d",ten:"Dự đoán / gợi ý (ước lượng kết quả)",e:"📈",mau:"#ffa94d"},{id:"s",ten:"Tạo sinh (tạo nội dung mới)",e:"🎨",mau:"#b197fc"}],
     the:[
-     {t:"FaceID mở khoá điện thoại",e:"🙂",b:"p",v:"FaceID so khớp khuôn mặt với dữ liệu đã lưu → nhận dạng, không tạo nội dung mới.",g:"FaceID có vẽ ra khuôn mặt mới không?"},
-     {t:"Gmail lọc thư rác",e:"📧",b:"p",v:"Xếp thư vào 2 nhóm rác/không rác → phân loại.",g:"Kết quả chỉ là một nhãn có sẵn."},
-     {t:"Trợ lý ảo Siri đặt báo thức",e:"🗣️",b:"p",v:"Theo SHS, Siri là AI hẹp: nhận lệnh giọng nói rồi làm đúng việc đã lập trình.",g:"Siri chỉ làm nhiệm vụ chuyên biệt đã định sẵn."},
-     {t:"Phần mềm dự báo thời tiết từ ảnh vệ tinh",e:"🌦️",b:"p",v:"Phân tích số liệu có sẵn để tính khả năng mưa → dự đoán.",g:"Máy tính xác suất, không sáng tác nội dung."},
-     {t:"Chatbot viết lời chúc, bài văn",e:"💬",b:"s",v:"Sinh đoạn văn bản mới từ câu lệnh → AI tạo sinh.",g:"Kết quả là văn bản mới chưa có sẵn."},
-     {t:"Suno tạo bài hát từ mô tả",e:"🎵",b:"s",v:"Sinh giai điệu, lời hát mới → AI tạo sinh.",g:"Bài hát này trước đó chưa tồn tại."},
-     {t:"Canva Magic vẽ tranh cổ động",e:"🖼️",b:"s",v:"Sinh hình ảnh mới từ mô tả → AI tạo sinh.",g:"Bức tranh do máy tạo ra mới."},
-     {t:"Google Maps tìm đường ngắn nhất",e:"🧭",b:"p",v:"Tính toán trên bản đồ có sẵn, không «sáng tác» ra đường mới.",g:"Con đường có sẵn trên bản đồ."}
+     {t:"FaceID: ảnh khuôn mặt → mở / không mở khoá",e:"🙂",b:"p",v:"So khớp khuôn mặt với mẫu đã lưu rồi gán nhãn «đúng chủ máy / không» → phân loại.",g:"Kết quả chỉ là một trong hai nhãn có sẵn."},
+     {t:"Gmail: một bức thư → «thư rác» hoặc «thư thường»",e:"📧",b:"p",v:"Gán thư vào một trong các nhóm có sẵn → phân loại.",g:"Đầu ra là nhãn, không phải nội dung mới."},
+     {t:"Google Lens: ảnh chiếc lá → tên loài cây",e:"🌿",b:"p",v:"Nhận dạng ảnh rồi trả về tên có sẵn trong dữ liệu → phân loại / nhận dạng.",g:"Tên loài cây đã có sẵn, máy chỉ nhận ra."},
+     {t:"YouTube: lịch sử xem → danh sách video em có thể thích",e:"▶️",b:"d",v:"Ước lượng video em sẽ thích từ thói quen cũ → dự đoán / gợi ý.",g:"Máy đoán sở thích của em, không tạo video mới."},
+     {t:"Dự báo thời tiết: số liệu vệ tinh → khả năng mưa ngày mai",e:"🌦️",b:"d",v:"Ước lượng khả năng xảy ra từ số liệu → dự đoán.",g:"Kết quả là một con số ước lượng."},
+     {t:"Google Maps: quãng đường, giờ đi → thời gian di chuyển ước tính",e:"🧭",b:"d",v:"Ước lượng số phút từ dữ liệu giao thông → dự đoán.",g:"Máy ước lượng, không «sáng tác» ra con đường."},
+     {t:"Chatbot: câu lệnh → bài văn, lời chúc mới",e:"💬",b:"s",v:"Sinh đoạn văn bản mới chưa có sẵn → tạo sinh.",g:"Đầu ra là nội dung mới."},
+     {t:"Công cụ tạo ảnh: mô tả → bức tranh cổ động",e:"🖼️",b:"s",v:"Sinh hình ảnh mới từ mô tả → tạo sinh.",g:"Bức tranh trước đó chưa tồn tại."},
+     {t:"Công cụ tạo nhạc: mô tả → bài hát mới",e:"🎵",b:"s",v:"Sinh giai điệu, lời mới → tạo sinh.",g:"Bài hát do máy tạo ra mới."}
     ]}, 1, xong);
  }},
- {ten:"AI hẹp hay AI tổng quát?", lam(el,xong){
-   el.appendChild(tao(`<div class="ghinho"><b>Ghi nhớ (SHS Bài 1):</b> AI hẹp (ANI) làm một nhiệm vụ cụ thể như nhận dạng khuôn mặt, dịch, chơi cờ; hầu hết AI hiện nay là AI hẹp. AI tổng quát (AGI) có thể tự học và làm mọi nhiệm vụ trí tuệ như con người — <b>hiện chưa tồn tại</b>.</div>`));
+ {ten:"Tiêu chí phân biệt ba nhóm AI", lam(el,xong){
+   el.appendChild(tao(`<div class="ghinho"><b>Ghi nhớ:</b> phân biệt bằng <b>đầu ra</b>. AI <b>phân loại</b> gán nhãn có sẵn · AI <b>dự đoán</b> ước lượng một kết quả (con số, khả năng, gợi ý) · AI <b>tạo sinh</b> tạo ra nội dung mới (chữ, ảnh, âm thanh); cùng một yêu cầu có thể cho nhiều kết quả khác nhau.</div>`));
    chuoiTN(el,[
-    {h:"Ô tô tự lái hiện nay thuộc loại nào?",lc:["AI tổng quát, vì xe tự xử lí được mọi tình huống","AI hẹp, vì chỉ chuyên làm tốt một nhiệm vụ lái xe","AI tạo sinh, vì xe tự tạo ra lộ trình đường đi mới"],d:1,v:"Đúng: dù rất phức tạp, xe tự lái chỉ làm tốt việc lái xe → AI hẹp.",g:["Xe tự lái chỉ giỏi lái xe; AI tổng quát phải làm được mọi nhiệm vụ trí tuệ như con người — hiện chưa tồn tại.",,"Tìm lộ trình là tính toán trên bản đồ có sẵn, không phải sáng tác nội dung mới."]},
-    {h:"Bạn An nói: «Tất cả ứng dụng AI trên điện thoại đều là AI tạo sinh». Em thấy sao?",lc:["Đúng, vì ứng dụng AI nào cũng tạo ra kết quả mới","Chưa đúng, vì FaceID chỉ đối chiếu, không tạo nội dung mới"],d:1,v:"Chính xác! Cho An 2 ví dụ: FaceID và Google Maps đều không tạo nội dung mới.",g:["FaceID trả về «khớp / không khớp» — kết quả cố định, không phải nội dung mới."]}
+    {h:"AI phân loại thường cho ra loại kết quả nào?",lc:["Một nhãn có sẵn, ví dụ «thư rác»","Một con số ước lượng, ví dụ «25 phút»","Một nội dung mới, ví dụ một bài thơ"],d:0,v:"Đúng — phân loại gán vào một nhãn có sẵn.",g:[,"Ước lượng con số là AI dự đoán.","Tạo nội dung mới là AI tạo sinh."]},
+    {h:"Tiêu chí rõ nhất để nhận ra AI tạo sinh là gì?",lc:["Tạo ra nội dung mới chưa có sẵn","Xử lí được thật nhiều dữ liệu","Trả lời nhanh hơn con người nhiều"],d:0,v:"Chính xác — nhìn vào đầu ra là nội dung mới.",g:[,"AI phân loại, dự đoán cũng xử lí rất nhiều dữ liệu.","Tốc độ không phải tiêu chí phân biệt."]},
+    {h:"Bạn An nói: «Mọi ứng dụng AI trên điện thoại đều là AI tạo sinh». Em thấy sao?",lc:["Đúng, vì ứng dụng AI nào cũng cho ra kết quả mới","Chưa đúng, vì FaceID chỉ gán nhãn, không tạo nội dung"],d:1,v:"Đúng — FaceID (phân loại) và Google Maps (dự đoán) không tạo nội dung mới.",g:["FaceID chỉ trả về «khớp / không khớp» — một nhãn có sẵn."]}
    ],1,xong);
  }}
 ];
@@ -587,38 +612,34 @@ BAI[2] = () => [
     <div class="mo" style="font-size:14px">Áo dài, cung đình xưa, tranh sách thiếu nhi</div></div></div></div>`));
    troTN(el,{h:"Vì sao ảnh lần 2 đúng ý hơn?",lc:["Vì lần 2 máy đã tự học thêm từ lần chạy đầu","Vì câu lệnh nói rõ trang phục, bối cảnh và phong cách","Vì câu lệnh dài hơn nên AI luôn vẽ đẹp hơn"],d:1,v:"Đúng! Prompt càng rõ ràng, cụ thể thì kết quả càng phù hợp mục tiêu.",g:["AI không tự học từ một lần chạy của em; ảnh đổi vì câu lệnh đổi.",,"Dài mà thiếu thông tin cần thiết vẫn chưa tốt; quan trọng là đủ thành phần."]},2,xong);
  }},
- {ten:"Bóc tách prompt «Email mời cô giáo»", lam(el,xong){
-   el.appendChild(tao(`<div class="ghinho"><b>Ghi nhớ (SHS Bài 5):</b> Prompt rõ ràng gồm <b>Chỉ thị</b> (việc cần làm) · <b>Dữ liệu đầu vào</b> (nội dung xử lý) · <b>Thông tin bổ sung / Ngữ cảnh</b> (đối tượng, phong cách) · <b>Định dạng đầu ra</b>.</div>`));
-   troPhanLoai(el,{thung:[{id:"ct",ten:"Chỉ thị",e:"🎯",mau:"#ffd166"},{id:"dl",ten:"Dữ liệu đầu vào",e:"📥",mau:"#4dd4ff"},{id:"nc",ten:"Ngữ cảnh / bổ sung",e:"🧭",mau:"#b197fc"},{id:"dd",ten:"Định dạng đầu ra",e:"📐",mau:"#34d399"}],
+ {ten:"Bóc tách prompt 4 thành phần", lam(el,xong){
+   el.appendChild(tao(`<div class="ghinho"><b>Ghi nhớ:</b> Prompt phù hợp với mục tiêu gồm 4 thành phần: <b>Vai trò</b> (AI đóng vai ai) · <b>Ngữ cảnh</b> (cho ai, hoàn cảnh nào) · <b>Nhiệm vụ</b> (việc cần làm, nội dung cần xử lí) · <b>Ràng buộc đầu ra</b> (độ dài, định dạng, phong cách).<br><small class="mo">Đối chiếu SHS Bài 5: Chỉ thị + Dữ liệu đầu vào ≈ Nhiệm vụ · Thông tin bổ sung ≈ Ngữ cảnh · Định dạng đầu ra ≈ Ràng buộc đầu ra · Vai trò là phần thêm giúp AI chọn giọng điệu, góc nhìn.</small></div>`));
+   troPhanLoai(el,{thung:[{id:"vt",ten:"Vai trò",e:"🎭",mau:"#ffd166"},{id:"nc",ten:"Ngữ cảnh",e:"🧭",mau:"#b197fc"},{id:"nv",ten:"Nhiệm vụ",e:"🎯",mau:"#4dd4ff"},{id:"rb",ten:"Ràng buộc đầu ra",e:"📐",mau:"#34d399"}],
     the:[
-     {t:"«Viết một email mời trang trọng.»",e:"🎯",b:"ct",v:"Nêu việc AI phải làm → Chỉ thị."},
-     {t:"«Gửi cô giáo Ngữ văn, mời dự buổi sinh hoạt chuyên đề ‘Ứng xử văn minh trên mạng xã hội’.»",e:"📥",b:"dl",v:"Nội dung cụ thể cần xử lý → Dữ liệu đầu vào."},
-     {t:"«Nhắc lại ấn tượng giờ học văn, thể hiện sự trân trọng; 8h sáng thứ Hai tại hội trường.»",e:"🧭",b:"nc",v:"Thông tin bổ sung về giọng văn, chi tiết → Ngữ cảnh."},
-     {t:"«Cấu trúc gồm Lời chào, Nội dung chính và Lời kết.»",e:"📐",b:"dd",v:"Quy định hình thức kết quả → Định dạng đầu ra."},
-     {t:"«Tạo hình ảnh minh họa áp phích.»",e:"🎯",b:"ct",v:"Việc cần làm → Chỉ thị."},
-     {t:"«Chủ đề ‘Cân bằng học tập và đam mê’.»",e:"📥",b:"dl",v:"Chủ đề AI cần xử lý → Dữ liệu đầu vào."},
-     {t:"«Hai học sinh THPT trong thư viện, phong cách minh họa bìa sách, màu tươi sáng.»",e:"🧭",b:"nc",v:"Bối cảnh, phong cách → Ngữ cảnh."},
-     {t:"«Ảnh tỉ lệ 16:9.»",e:"📐",b:"dd",v:"Khuôn dạng đầu ra → Định dạng."}
+     {t:"«Bạn là người dẫn chương trình học đường giàu kinh nghiệm.»",e:"🎤",b:"vt",v:"AI đóng vai ai → Vai trò."},
+     {t:"«Lớp 10A thuyết trình 3 phút trong giờ chào cờ về an toàn trên mạng.»",e:"🏫",b:"nc",v:"Hoàn cảnh, người nghe → Ngữ cảnh."},
+     {t:"«Hãy viết kịch bản gồm mở bài, 3 ý chính và kết bài.»",e:"📝",b:"nv",v:"Việc AI phải làm → Nhiệm vụ."},
+     {t:"«Không quá 300 từ, trình bày gạch đầu dòng, dùng từ dễ hiểu.»",e:"📏",b:"rb",v:"Độ dài, cách trình bày → Ràng buộc đầu ra."},
+     {t:"«Bạn là chuyên gia dinh dưỡng cho học sinh.»",e:"🥗",b:"vt",v:"Vai trò của AI."},
+     {t:"«Em 15 tuổi, học cả ngày, mỗi ngày có 25 nghìn đồng cho bữa sáng.»",e:"🎒",b:"nc",v:"Hoàn cảnh của người hỏi → Ngữ cảnh."},
+     {t:"«Hãy gợi ý thực đơn bữa sáng cho 7 ngày.»",e:"🍜",b:"nv",v:"Việc cần làm → Nhiệm vụ."},
+     {t:"«Trình bày bảng 3 cột: Ngày – Món – Giá.»",e:"📊",b:"rb",v:"Định dạng kết quả → Ràng buộc đầu ra."}
     ]},2,xong);
  }},
- {ten:"Sửa prompt «bảo vệ môi trường» — máy đo 4 thành phần", lam(el,xong){
-   el.appendChild(tao(`<div><div class="tinhhuong">Một bạn viết: <b>«Tạo hình ảnh minh họa về việc bảo vệ môi trường»</b> → AI ra ảnh chung chung. Em viết lại cho đủ 4 thành phần (đèn sáng đủ 4 là đạt).</div>
-   <textarea id="t2Vb" placeholder="Viết prompt của em ở đây…"></textarea>
-   <div class="den" id="t2Den"><span data-k="ct">🎯 Chỉ thị</span><span data-k="dl">📥 Dữ liệu đầu vào</span><span data-k="nc">🧭 Ngữ cảnh</span><span data-k="dd">📐 Định dạng</span></div>
+ {ten:"Prompt v1 → v2: máy đo 4 thành phần", lam(el,xong){
+   el.appendChild(tao(`<div><div class="tinhhuong"><b>Prompt v1</b> của một bạn: <i>«Viết kịch bản thuyết trình về an toàn trên mạng.»</i> → AI ra bài dài, chung chung, không hợp giờ chào cờ. Em viết <b>prompt v2</b> đủ 4 thành phần (đèn sáng đủ 4 là đạt). Muốn thử tạo ảnh cổ động thì viết prompt ảnh theo cùng 4 thành phần.</div>
+   <textarea id="t2Vb" placeholder="Prompt v2 của em…"></textarea>
+   <div class="den" id="t2Den"><span data-k="vt">🎭 Vai trò</span><span data-k="nc">🧭 Ngữ cảnh</span><span data-k="nv">🎯 Nhiệm vụ</span><span data-k="rb">📐 Ràng buộc đầu ra</span></div>
    <svg viewBox="0 0 400 34" width="100%"><rect x="0" y="8" width="400" height="18" rx="9" fill="rgba(255,255,255,.12)"/><rect id="t2Thanh" x="0" y="8" width="0" height="18" rx="9" fill="url(#gXanh)" style="transition:width .3s"/></svg>
-   <div class="hang"><button class="nut nho phu" id="t2Copy">📋 Chép prompt để dán vào công cụ AI</button><button class="nut nho phu" id="t2Gui">📤 Gửi bài viết cho cô</button><span class="mo" style="font-size:14px">Máy đo theo từ khoá — cô sẽ duyệt nội dung thật.</span></div><div class="phanhoi" id="t2Ph"></div></div>`));
-   const RX = {ct:/(^|\s)(tạo|viết|vẽ|lập|soạn|tóm tắt|giải thích|liệt kê|gợi ý|đề xuất|thiết kế|làm)\b/i,
-     dl:/(chủ đề|về việc|về |nội dung|đề tài|cảnh|nhóm học sinh|nhặt rác|trồng cây|môi trường)/i,
-     nc:/(phong cách|bối cảnh|màu|ánh sáng|ánh nắng|học sinh|thpt|lớp|khuôn viên|góc|dành cho|giọng|hiện đại|tươi sáng|thiếu nhi)/i,
-     dd:/(tỉ lệ|tỷ lệ|16:9|4:3|khổ|gồm|bảng|cột|đoạn|gạch đầu dòng|tối đa|không quá|\d+\s*(từ|câu|dòng|ý|trang|khung)|định dạng|áp phích|poster|ảnh ngang|ảnh dọc|dạng)/i};
+   <div class="hang"><button class="nut nho phu" id="t2Copy">📋 Chép prompt</button><button class="nut nho phu" id="t2Gui">📤 Gửi prompt cho cô</button><span class="mo" style="font-size:14px">Máy đo theo từ khoá — cô duyệt nội dung thật.</span></div><div class="phanhoi" id="t2Ph"></div></div>`));
    const vb = $("#t2Vb",el); let daXong=false;
-   vb.addEventListener("input",()=>{ const s = vb.value; let n=0;
-     $("#t2Den",el).querySelectorAll("span").forEach(sp=>{ const ok = s.length>15 && RX[sp.dataset.k].test(s); sp.classList.toggle("bat",ok); if(ok) n++; });
-     $("#t2Thanh",el).setAttribute("width", n*100);
-     if(n===4 && s.length>=60 && !daXong){ daXong=true; am(true); banPhao(60); chamViet(el,2,"Prompt bảo vệ môi trường",s,{dat:true,tc:"4/4",nx:"Đủ Chỉ thị, Dữ liệu đầu vào, Ngữ cảnh, Định dạng."}); phanHoi($("#t2Ph",el),true,"Prompt đủ 4 thành phần! Gợi ý mẫu trong SHS: «…Một nhóm học sinh THPT cùng nhặt rác nhựa và trồng cây trong khuôn viên trường. Phong cách tranh cổ động hiện đại, màu xanh lá tươi sáng, góc rộng, ánh nắng ban mai.»"); xong(); }
+   vb.addEventListener("input",()=>{ const s = vb.value, c = demPrompt(s);
+     $("#t2Den",el).querySelectorAll("span").forEach(sp=>sp.classList.toggle("bat",c.includes(sp.dataset.k)));
+     $("#t2Thanh",el).setAttribute("width", c.length*100);
+     if(c.length===4 && s.length>=60 && !daXong){ daXong=true; am(true); banPhao(60); chamViet(el,2,"Prompt v2 — kịch bản thuyết trình",s,{dat:true,tc:"4/4",nx:"Đủ Vai trò, Ngữ cảnh, Nhiệm vụ, Ràng buộc đầu ra."}); phanHoi($("#t2Ph",el),true,"Prompt v2 đủ 4 thành phần! Về nhà làm phiếu «Prompt v1 → v2» cho một việc trong cuộc sống (phần Bài về nhà ở dưới)."); xong(); }
    });
-   $("#t2Gui",el).onclick=()=>{ const s=vb.value.trim(); if(soTu(s)<5) return bao("Em viết prompt trước nhé"); const thieu=[...$("#t2Den",el).querySelectorAll("span")].filter(x=>!x.classList.contains("bat")).map(x=>x.textContent.replace(/^\S+\s/,""));
-     chamViet(el,2,"Prompt bảo vệ môi trường",s,{dat:!thieu.length&&s.length>=60,tc:(4-thieu.length)+"/4",nx:thieu.length?"Còn thiếu: "+thieu.join(", ")+".":"Đủ 4 thành phần."}); am(true); };
+   $("#t2Gui",el).onclick=()=>{ const s=vb.value.trim(); if(soTu(s)<5) return bao("Em viết prompt trước nhé"); const c=demPrompt(s), thieu=Object.keys(RX_PROMPT).filter(k=>!c.includes(k)).map(k=>TEN_PROMPT[k]);
+     chamViet(el,2,"Prompt v2 — kịch bản thuyết trình",s,{dat:!thieu.length&&s.length>=60,tc:c.length+"/4",nx:thieu.length?"Còn thiếu: "+thieu.join(", ")+".":"Đủ 4 thành phần."}); am(true); };
    $("#t2Copy",el).onclick=()=>{ try{ navigator.clipboard.writeText(vb.value); bao("Đã chép prompt"); }catch(e){ vb.select(); document.execCommand("copy"); bao("Đã chép prompt"); } };
  }}
 ];
@@ -633,8 +654,8 @@ BAI[3] = () => [
       <b>Sao chép toàn bộ</b> nội dung AI, không đọc lại → lúng túng khi thuyết trình.</div></div></div>`));
    troTN(el,{h:"Nhóm nào dùng AI tạo sinh đúng cách để học tập?",lc:["Nhóm Long, vì giữ nguyên văn AI nên nội dung chính xác","Nhóm Minh, vì kiểm tra, chọn lọc rồi diễn đạt lại","Cả hai nhóm, vì đều dùng AI để tìm thêm tư liệu"],d:1,v:"Đúng! AI chỉ hỗ trợ; chính em phải hiểu, ghi nhớ và trình bày lại bằng cách hiểu của mình.",g:["AI có thể sai; chép nguyên văn không đọc lại thì không hiểu và dễ mang lỗi vào bài.",,"Cùng dùng AI nhưng cách dùng khác nhau: một nhóm kiểm tra, một nhóm chép nguyên văn."]},3,xong);
  }},
- {ten:"Gợi mở tư duy hay chép bài?", lam(el,xong){
-   troPhanLoai(el,{thung:[{id:"g",ten:"AI gợi mở tư duy (nên làm)",e:"💡",mau:"#34d399"},{id:"c",ten:"Chép nguyên văn, ỷ lại (không nên)",e:"🚫",mau:"#ff6b81"}],
+ {ten:"AI hỗ trợ học tập hay AI làm thay?", lam(el,xong){
+   troPhanLoai(el,{thung:[{id:"g",ten:"AI hỗ trợ học tập",e:"💡",mau:"#34d399"},{id:"c",ten:"AI làm thay",e:"🚫",mau:"#ff6b81"}],
     the:[
      {t:"Nhờ AI gợi ý các bước giải bài Toán mẫu, rồi tự giải bài tương tự",e:"➗",b:"g",v:"AI gợi hướng tư duy, em vẫn tự làm."},
      {t:"Dán nguyên bài văn AI viết vào bài nộp",e:"📋",b:"c",v:"Chép nguyên văn làm suy giảm năng lực tự học."},
@@ -645,6 +666,13 @@ BAI[3] = () => [
      {t:"Nhờ AI tạo đề luyện tập 15 phút rồi tự làm, tự đối chiếu",e:"📝",b:"g",v:"Bước 3: luyện tập và tự kiểm tra."},
      {t:"Hỏi lại AI: «Vì sao câu 4 dùng ‘for two years’ mà không dùng ‘since’?»",e:"❓",b:"g",v:"Phản biện để hiểu bản chất: for + khoảng thời gian, since + mốc thời gian."}
     ]},3,xong);
+ }},
+ {ten:"Biến chatbot thành gia sư gợi mở", lam(el,xong){
+   el.appendChild(tao(`<div class="tinhhuong">Chọn prompt giúp chatbot <b>hỏi gợi mở từng bước</b> thay vì làm hộ. Quy tắc: <b>khai thác AI gợi mở tư duy, không chép nguyên văn</b>.</div>`));
+   chuoiTN(el,[
+    {h:"Bài Hoá học: cân bằng phương trình phản ứng. Prompt nào tốt nhất?",lc:["Bạn là gia sư Hoá 10. Đừng giải hộ; hãy hỏi gợi mở từng bước để em tự cân bằng.","Bạn là gia sư Hoá 10. Hãy giải thật chi tiết rồi đưa đáp án để em chép lại vào vở.","Bạn là gia sư Hoá 10. Hãy cho em đáp án đúng thật nhanh, không cần giải thích gì."],d:0,v:"Đúng — gia sư gợi mở giúp em tự làm được.",g:[,"Lời giải chi tiết để chép là AI làm thay.","Chỉ lấy đáp án thì em không học được gì."]},
+    {h:"Tác phẩm Ngữ văn 10: tóm tắt một chương. Prompt nào giữ được tư duy của em?",lc:["Hãy viết sẵn một bản tóm tắt thật hay để em nộp cho cô giáo sáng mai.","Hãy hỏi em 3 câu về nhân vật, rồi nhận xét bản tóm tắt do em tự viết.","Hãy tóm tắt thật dài và đầy đủ để em không cần đọc lại tác phẩm nữa."],d:1,v:"Chính xác — em tự viết, AI hỏi và nhận xét.",g:["Nộp bản AI viết sẵn là AI làm thay — vi phạm liêm chính.",,"Không đọc tác phẩm thì em không hiểu bài."]}
+   ],3,xong);
  }},
  {ten:"Quy trình 3 bước tự học cùng AI", lam(el,xong){
    troXepThuTu(el,{buoc:[
@@ -1375,11 +1403,11 @@ function nenAnh(tep, canh, chatLuong, toiDa){ return new Promise((ok, loi) => { 
       kq = cv.toDataURL("image/jpeg", q).split(",")[1]; if (kq.length * .75 <= toiDa) break; c *= .85; q = Math.max(.4, q - .08); }
     ok(kq); };
   im.onerror = () => { URL.revokeObjectURL(url); loi(new Error("không đọc được ảnh")); }; im.src = url; }); }
-function oAnh(t){
-  const h = hsNay(), r = banGhi(), b = (buoiNay() || {}).buoi || "ngoài giờ " + homNay(), daNop = ((r.anh || {})[t + "|" + b]);
-  const o = tao(`<div class="o-anh"><b>📸 Ảnh thực hành tiết này</b>
+function oAnh(t, bCoDinh, tieuDe){
+  const h = hsNay(), r = banGhi(), b = bCoDinh || (buoiNay() || {}).buoi || "ngoài giờ " + homNay(), daNop = ((r.anh || {})[t + "|" + b]);
+  const o = tao(`<div class="o-anh"><b>${tieuDe || "📸 Ảnh thực hành tiết này"}</b>
     <p class="mo" style="font-size:13.5px;margin:4px 0">Chụp <b>màn hình hoặc bài làm</b> (Windows + Shift + S rồi dán Ctrl + V, hoặc chọn tệp). Không chụp mặt bạn.</p>
-    ${daNop ? `<div class="phanhoi d">✅ Đã nộp ảnh tiết ${t} buổi này.</div>` : `<input type="file" accept="image/*" class="anhTep"><div class="anhXem"></div><button class="nut nho anhGui" disabled>📤 Nộp ảnh cho cô</button><div class="phanhoi anhKQ"></div>`}</div>`);
+    ${daNop ? `<div class="phanhoi d">✅ Đã nộp ảnh${bCoDinh ? " bài về nhà" : ""} tiết ${t}${bCoDinh ? "" : " buổi này"}.</div>` : `<input type="file" accept="image/*" class="anhTep"><div class="anhXem"></div><button class="nut nho anhGui" disabled>📤 Nộp ảnh cho cô</button><div class="phanhoi anhKQ"></div>`}</div>`);
   if (daNop || !h || laGV()) { if (!h || laGV()) o.querySelector("p").insertAdjacentHTML("afterend", '<div class="mo" style="font-size:13px">(Học sinh đăng nhập mới nộp được ảnh.)</div>'); return o; }
   let anh = "";
   const nhan = async f => { if (!f || !/^image\//.test(f.type)) return bao("Em chọn tệp ảnh nhé");
@@ -1456,7 +1484,7 @@ function pyNap(){ return new Promise(ok => {
 
 /* ============ TRANG GIÁO VIÊN ============ */
 let gvTab = "lop";
-const TAB_GV = [["lop","🏫 Lớp & mật khẩu"],["buoi","🕘 Buổi học"],["led","📺 Màn LED"],["toan","📐 Tiết Toán"],["dd","✅ Điểm danh"],["sao","⭐ Sao & tiến độ"],["viet","✍️ Duyệt phần viết"],["anh","📸 Ảnh thực hành"],["noi","⚙️ Kết nối Sheet"],["may","💻 Máy này"]];
+const TAB_GV = [["lop","🏫 Lớp & mật khẩu"],["buoi","🕘 Buổi học"],["led","📺 Màn LED"],["toan","📐 Tiết Toán"],["bt","🏠 Bài về nhà"],["dd","✅ Điểm danh"],["sao","⭐ Sao & tiến độ"],["viet","✍️ Duyệt phần viết"],["anh","📸 Ảnh thực hành"],["noi","⚙️ Kết nối Sheet"],["may","💻 Máy này"]];
 const dsLop = () => Object.keys(DB.lop || {}).sort();
 const chonLop = (id, chon) => `<select id="${id}" style="width:auto;min-width:120px">${dsLop().map(l => `<option ${l === chon ? "selected" : ""}>${esc(l)}</option>`).join("") || "<option value=''>— chưa có lớp —</option>"}</select>`;
 const dsMa = lop => Array.from({ length: (DB.lop || {})[lop] || 0 }, (_, i) => "HS" + String(i + 1).padStart(2, "0"));
@@ -1465,12 +1493,12 @@ function veGV(){
   if (!laGV() && !laToan() && !MAU_THU) { m.innerHTML = `<div class="kinh" style="padding:24px;max-width:560px;margin:auto;text-align:center"><h2>👩‍🏫 Trang giáo viên</h2><p class="mo">Cô đăng xuất rồi chọn «Giáo viên» ở màn đăng nhập, gõ mã giáo viên.</p><button class="nut" onclick="dangXuat()">Đến màn đăng nhập</button></div>`; return; }
   m.innerHTML = `${MAU_THU ? '<div class="mau-thu">DỮ LIỆU THỬ — không phải lớp thật</div>' : ""}
    <div class="kinh" style="padding:16px 20px;margin-bottom:14px"><h1 style="margin:0 0 8px">${laToan() ? "📐 Trang GV Toán" : laTin() ? "💻 Trang " + esc(DB.ai.replace("GV-TIN", "GV Tin ")) : "👩‍🏫 Trang giáo viên"}</h1>
-    <div class="tab-gv">${TAB_GV.filter(([k]) => laToan() ? (k === "led" || k === "toan") : laTin() ? (k !== "noi" && k !== "may") : true).map(([k, v]) => `<button class="${k === gvTab ? "on" : ""}" data-k="${k}">${v}</button>`).join("")}</div></div><div id="gvNoi"></div>`;
+    <div class="tab-gv">${TAB_GV.filter(([k]) => laToan() ? (k === "led" || k === "toan" || k === "bt") : laTin() ? (k !== "noi" && k !== "may") : true).map(([k, v]) => `<button class="${k === gvTab ? "on" : ""}" data-k="${k}">${v}</button>`).join("")}</div></div><div id="gvNoi"></div>`;
   if (laToan() && gvTab !== "toan") gvTab = "toan";
   if (laTin() && (gvTab === "noi" || gvTab === "may")) gvTab = "buoi";
   m.querySelectorAll(".tab-gv button").forEach(b => b.onclick = () => { if (b.dataset.k === "led") return di("led"); gvTab = b.dataset.k; veGV(); });
   if (gvTab === "led") gvTab = "buoi";
-  ({ toan: gvToan, lop: gvLop, buoi: gvBuoi, dd: gvDD, sao: gvSao, viet: gvViet, anh: gvAnh, noi: gvNoi, may: gvMay })[gvTab]($("#gvNoi"));
+  ({ bt: gvBT, toan: gvToan, lop: gvLop, buoi: gvBuoi, dd: gvDD, sao: gvSao, viet: gvViet, anh: gvAnh, noi: gvNoi, may: gvMay })[gvTab]($("#gvNoi"));
 }
 function gvLop(el){
   el.innerHTML = `<div class="hai"><div class="kinh" style="padding:16px"><h3>🏫 Lớp và sĩ số</h3><p class="mo" style="font-size:14.5px">Mỗi dòng một lớp: <b>Lớp: sĩ số</b>. App tự sinh mã HS01, HS02… Chỉ dùng mã, không nhập tên.</p>
@@ -1590,6 +1618,188 @@ function inTrang(ten,html){ const f=document.createElement("iframe"); f.style.cs
   const d=f.contentDocument; d.open(); d.write(`<!doctype html><html lang="vi"><head><meta charset="utf-8"><title>${ten}</title><style>body{font-family:"Times New Roman",serif;font-size:14pt;padding:24px;color:#000;line-height:1.5}h2{font-size:16pt}</style></head><body>${html}</body></html>`); d.close();
   setTimeout(()=>{ f.contentWindow.focus(); f.contentWindow.print(); setTimeout(()=>f.remove(),1500); },300); }
 
+/* ============ BÀI VỀ NHÀ: HS nộp bài thực hành làm tại nhà · GV chọn vài bài chữa ở buổi sau ============ */
+const RX_PROMPT = { vt: /(bạn là|em là|đóng vai|với vai trò|trong vai|hãy là|là một)/i,
+  nc: /(lớp|học sinh|người nghe|người đọc|bối cảnh|dành cho|đối tượng|tuổi|chủ đề|tại |trong giờ|gia đình|ngân sách)/i,
+  nv: /(hãy |viết|tạo|lập|soạn|gợi ý|tóm tắt|giải thích|liệt kê|vẽ|đề xuất|thiết kế|lên kế hoạch)/i,
+  rb: /(không quá|tối đa|khoảng \d|\d+\s*(từ|câu|dòng|ý|phút|ngày|cột|món)|bảng|gạch đầu dòng|ngắn gọn|không dùng|định dạng|tỉ lệ|16:9|phong cách|giọng)/i };
+const TEN_PROMPT = { vt: "Vai trò", nc: "Ngữ cảnh", nv: "Nhiệm vụ", rb: "Ràng buộc đầu ra" };
+const demPrompt = s => Object.keys(RX_PROMPT).filter(k => String(s || "").length > 15 && RX_PROMPT[k].test(s));
+const BTVN = {
+  1: { ten: "Bảng ứng dụng AI quanh em", de: "<b>Cơ bản (khoảng 15 phút):</b> 6 ứng dụng AI em hoặc người thân dùng, mỗi nhóm (tạo sinh, phân loại, dự đoán) 2 ứng dụng. Điền: tên – tính năng – đầu vào – đầu ra – nhóm.<br><b>Thử thách (không bắt buộc):</b> đủ 9 ứng dụng, có 1 ứng dụng thuộc 2 nhóm — giải thích ở cột «Tính năng».",
+    bang: { cot: ["Tên ứng dụng", "Tính năng", "Đầu vào", "Đầu ra"], nhom: ["Tạo sinh", "Phân loại / nhận dạng", "Dự đoán / gợi ý"], dong: 6 },
+    cham: v => { const dd = (v.bang || []).filter(r => r.slice(0, 4).every(x => soTu(x) >= 1) && r[4]); const nh = new Set(dd.map(r => r[4]));
+      const du3 = ["Tạo sinh", "Phân loại / nhận dạng", "Dự đoán / gợi ý"].every(n => dd.filter(r => r[4] === n).length >= 2);
+      return { dat: dd.length >= 6 && du3, tc: `${dd.length} dòng đủ (cơ bản 6 · thử thách 9) · ${nh.size}/3 nhóm`, nx: dd.length < 6 ? `Còn ${6 - dd.length} dòng chưa điền đủ 5 cột.` : du3 ? (dd.length >= 9 ? "Hoàn thành mức thử thách! " : "Đạt mức cơ bản. ") + "Kiểm tra lại cột «Đầu ra» có khớp với nhóm không." : "Mỗi nhóm cần ít nhất 2 ứng dụng." }; } },
+  2: { ten: "Phiếu «Prompt v1 → v2» — nhiệm vụ cuộc sống", de: "Chọn một việc trong cuộc sống: <b>thực đơn bữa sáng 1 tuần</b> hoặc <b>kế hoạch chi tiêu tuần</b>. Viết prompt v1 (ngắn, mơ hồ), rồi prompt v2 đủ 4 thành phần <b>Vai trò – Ngữ cảnh – Nhiệm vụ – Ràng buộc đầu ra</b>. Nếu có công cụ AI (máy nhà, máy trường) thì ghi tóm tắt kết quả; nếu không có, ghi điều em <b>mong đợi</b> khác đi.<br><b>Thử thách (không bắt buộc):</b> viết thêm prompt v3 và nói nó tốt hơn v2 ở đâu.",
+    truong: [["muc", "Mục tiêu của em"], ["v1", "Prompt v1 (mơ hồ)"], ["kq1", "Kết quả v1 (tóm tắt 1–2 câu)"], ["v2", "Prompt v2 (đủ 4 thành phần)"], ["kq2", "Kết quả v2 (tóm tắt 1–2 câu)"], ["nx", "Em nhận xét: v2 tốt hơn v1 ở điểm nào?"], ["v3", "(Thử thách — không bắt buộc) Prompt v3, tốt hơn v2 ở đâu?"]],
+    cham: v => { const c = demPrompt(v.v2), thieu = Object.keys(RX_PROMPT).filter(k => !c.includes(k)).map(k => TEN_PROMPT[k]);
+      return { dat: c.length === 4 && soTu(v.nx) >= 8 && soTu(v.v1) >= 2, tc: `v2: ${c.length}/4 thành phần`, nx: (thieu.length ? "Prompt v2 còn thiếu: " + thieu.join(", ") + ". " : "Prompt v2 đủ 4 thành phần. ") + (soTu(v.nx) < 8 ? "Phần nhận xét cần cụ thể hơn (ít nhất 8 từ)." : "") }; } },
+  3: { ten: "Nhật ký prompt «gia sư gợi mở»", de: "Chọn <b>một đoạn tác phẩm Ngữ văn 10</b> hoặc <b>một bài Hoá học</b> em đang học. Nhờ chatbot đóng vai gia sư <b>hỏi gợi mở, không giải hộ</b>. Ghi 2 lượt hỏi – đáp và điều em tự làm được. Không nhập họ tên, ảnh, thông tin cá nhân vào chatbot. Nhật ký này dùng lại ở Tiết 9.<br><b>Thử thách (không bắt buộc):</b> đối chiếu với SGK, vở ghi — chỉ ra một chỗ AI gợi ý chưa đúng (nếu có).",
+    truong: [["bai", "Bài / đoạn em chọn"], ["p1", "Lượt 1 — prompt của em"], ["a1", "Chatbot gợi ý (tóm tắt)"], ["p2", "Lượt 2 — em hỏi tiếp"], ["a2", "Chatbot gợi ý (tóm tắt)"], ["tu", "Sau khi được gợi ý, em TỰ làm được gì?"], ["ht", "1 ví dụ «AI hỗ trợ» và 1 ví dụ «AI làm thay» em từng gặp"], ["dc", "(Thử thách — không bắt buộc) Đối chiếu SGK, vở: chỗ AI gợi ý chưa đúng?"]],
+    cham: v => { const thieu = ["bai", "p1", "a1", "p2", "tu", "ht"].filter(k => soTu(v[k]) < 3); const goiMo = /(đừng|không) (giải|làm) (hộ|thay|giúp)|gợi (mở|ý)|hỏi (em|lại)|từng bước/i.test(v.p1 + " " + v.p2);
+      return { dat: !thieu.length && goiMo, tc: `${6 - thieu.length}/6 mục · ${goiMo ? "có" : "chưa có"} yêu cầu gợi mở`, nx: (thieu.length ? `Còn ${thieu.length} mục viết quá ngắn. ` : "") + (goiMo ? "Prompt có yêu cầu gia sư gợi mở — tốt." : "Prompt nên nói rõ «đừng giải hộ, hãy gợi ý / hỏi lại em từng bước».") }; } },
+  4: { ten: "Phiếu kiểm chứng câu trả lời của AI", de: "Hỏi chatbot <b>một câu về lịch sử, địa lí của địa phương em</b> (phường, xã, di tích gần nhà). Đối chiếu với <b>nguồn chính thống</b> (SGK, cổng thông tin của phường/xã, bảo tàng, báo chính thống). Ghi lại chỗ đúng, chỗ sai hoặc bịa.",
+    truong: [["hoi", "Câu hỏi em đặt"], ["tl", "Chatbot trả lời (tóm tắt)"], ["nguon", "Nguồn chính thống em đối chiếu"], ["kq", "Kết luận: chỗ nào đúng, chỗ nào sai / bịa"], ["vi", "Vì sao AI có thể trả lời sai?"]],
+    cham: v => { const thieu = ["hoi", "tl", "nguon", "kq", "vi"].filter(k => soTu(v[k]) < 3);
+      return { dat: !thieu.length, tc: `${5 - thieu.length}/5 mục`, nx: thieu.length ? `Còn ${thieu.length} mục viết quá ngắn — nhất là phần nguồn và kết luận.` : "Phiếu đủ 5 mục, có nguồn đối chiếu." }; } }
+};
+const noiDungBT = (t, v) => { const d = BTVN[t]; if (d.bang) return (v.bang || []).filter(r => r.some(x => x)).map((r, i) => `${i + 1}. ${r.slice(0, 4).join(" | ")} | ${r[4] || "?"}`).join("\n");
+  return d.truong.map(([k, n]) => `${n}: ${v[k] || ""}`).join("\n"); };
+function oBTVN(t){
+  const d = BTVN[t], h = hsNay(), r = banGhi(); r.btvn = r.btvn || {}; const v = r.btvn[t] = r.btvn[t] || {};
+  const o = tao(`<section class="nv kinh o-btvn"><h3><span class="so" style="background:var(--nhan1)">🏠</span>Bài về nhà · ${esc(d.ten)}</h3>
+    <div class="tinhhuong">${d.de}<br><b class="han-bt">${demHan(t)}</b><br><small class="mo">Cô chọn vài bài để <b>chữa chung ở đầu buổi sau</b> (không hiện tên). Nộp lại được — cô xem bản mới nhất.</small></div>
+    <div class="bt-form"></div><div class="hang"><button class="nut phu nho" data-luu>💾 Lưu nháp</button><button class="nut" data-nop>📤 Nộp bài cho cô</button><span class="mo" data-tt>${v.daNop ? "✅ Đã nộp lúc " + esc(v.daNop) : ""}</span></div><div class="bt-anh"></div></section>`);
+  const f = o.querySelector(".bt-form");
+  if (d.bang) { const b = v.bang = v.bang || Array.from({ length: d.bang.dong }, () => ["", "", "", "", ""]);
+    f.innerHTML = `<div style="overflow:auto"><table class="bang bang-bt"><tr><th>#</th>${d.bang.cot.map(c => `<th>${c}</th>`).join("")}<th>Nhóm</th></tr>${b.map((row, i) => `<tr><td>${i + 1}</td>${[0, 1, 2, 3].map(j => `<td><input data-r="${i}" data-c="${j}" value="${esc(row[j])}"></td>`).join("")}<td><select data-r="${i}" data-c="4"><option value="">—</option>${d.bang.nhom.map(n => `<option ${row[4] === n ? "selected" : ""}>${n}</option>`).join("")}</select></td></tr>`).join("")}</table></div>
+      <button class="nut phu nho" data-them>+ Thêm dòng</button>`;
+    f.querySelector("[data-them]").onclick = () => { b.push(["", "", "", "", ""]); luuDB(); o.replaceWith(oBTVN(t)); }; }
+  else f.innerHTML = d.truong.map(([k, n]) => `<label>${n}</label><textarea data-k="${k}" rows="2" style="min-height:58px">${esc(v[k] || "")}</textarea>`).join("");
+  const thu = () => { f.querySelectorAll("[data-k]").forEach(x => v[x.dataset.k] = x.value.trim()); f.querySelectorAll("[data-r]").forEach(x => v.bang[+x.dataset.r][+x.dataset.c] = x.value.trim()); luuDB(); };
+  o.querySelector("[data-luu]").onclick = () => { thu(); am(true); bao("Đã lưu nháp trên máy này"); };
+  o.querySelector("[data-nop]").onclick = () => { thu(); const kq = d.cham(v), nd = noiDungBT(t, v);
+    if (soTu(nd) < 8) { am(false); return bao("Em làm bài trước rồi nộp nhé"); }
+    if (!h || laGV()) { chamViet(o, t, "BTVN · " + d.ten, nd, kq); return bao("(Chế độ cô xem thử — không gửi)"); }
+    r.pv = r.pv || {}; delete r.pv[t + "|BTVN · " + d.ten];   // nộp lại luôn gửi bản mới
+    chamViet(o, t, "BTVN · " + d.ten, nd, kq); v.daNop = ngayGio(); luuDB(); o.querySelector("[data-tt]").textContent = "✅ Đã nộp lúc " + v.daNop;
+    themSao("btvn-" + t, "Nộp bài về nhà tiết " + t, 2); if (SOM_BTVN[t] && Date.now() < Date.parse(SOM_BTVN[t])) themSao("btvn-som-" + t, "Nộp sớm bài về nhà tiết " + t, 1); am(true); banPhao(60); bao(coMang() ? "Đã nộp — kết quả đang gửi về cho cô" : "Đã nộp — máy sẽ gửi khi có mạng"); };
+  o.querySelector(".bt-anh").appendChild(oAnh(t, "BTVN", "📸 Ảnh bài làm ở nhà (nếu làm trên giấy, chụp rõ bài — không chụp mặt)"));
+  if (v.daNop) setTimeout(() => xemCoDuyet(t, o), 300);
+  return o;
+}
+
+
+// ── v6: hạn nộp, ghi nhớ, vai nhóm, kiểm tra nhanh, gửi prompt lên LED (Tiết 1–3)
+const HAN_BTVN = { 1: "2026-12-12T23:00:00+07:00", 2: "2026-12-12T23:00:00+07:00", 3: "2026-12-12T23:00:00+07:00" };
+const SOM_BTVN = { 1: "2026-12-08T23:00:00+07:00", 2: "2026-12-08T23:00:00+07:00", 3: "2026-12-08T23:00:00+07:00" };
+const KTN = {"1": [{"hoi": "Ứng dụng nghe nhạc gợi ý bài hát tiếp theo cho em thuộc nhóm nào?", "pa": ["Phân loại – nhận dạng", "Dự đoán – gợi ý", "Tạo sinh nội dung mới"], "dung": 1}, {"hoi": "Camera nhận ra biển số xe ra vào cổng trường thuộc nhóm nào?", "pa": ["Phân loại – nhận dạng", "Dự đoán – gợi ý", "Tạo sinh nội dung mới"], "dung": 0}, {"hoi": "Tiêu chí chính để xếp một ứng dụng AI vào nhóm là gì?", "pa": ["Ứng dụng trả lại kiểu kết quả gì", "Ứng dụng do công ty nào làm ra", "Ứng dụng cần mạng mạnh hay yếu"], "dung": 0}], "2": [{"hoi": "«Trả lời trong 5 gạch đầu dòng» là thành phần nào của prompt?", "pa": ["Thành phần vai trò", "Thành phần ngữ cảnh", "Thành phần ràng buộc"], "dung": 2}, {"hoi": "«Cho học sinh lớp 10 sắp thi giữa kì» là thành phần nào của prompt?", "pa": ["Thành phần vai trò", "Thành phần ngữ cảnh", "Thành phần ràng buộc"], "dung": 1}, {"hoi": "AI trả lời chưa đúng ý em, em nên làm gì trước tiên?", "pa": ["Bổ sung phần còn thiếu rồi hỏi lại", "Đổi sang dùng một ứng dụng AI khác", "Chép tạm câu trả lời vào bài làm"], "dung": 0}], "3": [{"hoi": "Việc nào là dùng AI hỗ trợ học tập?", "pa": ["Nhờ AI gợi ý từng bước rồi tự giải", "Nhờ AI giải hết rồi chép vào vở", "Nhờ AI viết bài văn rồi nộp cho cô"], "dung": 0}, {"hoi": "Prompt «gia sư gợi mở» cần có ràng buộc nào?", "pa": ["Đưa đáp án đầy đủ ngay từ câu đầu", "Không đưa đáp án, chỉ gợi ý từng bước", "Trả lời thật dài để em đọc cho đủ"], "dung": 1}, {"hoi": "AI trả lời một kiến thức em chưa chắc đúng, em nên làm gì?", "pa": ["Tin ngay vì AI biết nhiều hơn em", "Bỏ qua, không quan tâm đúng hay sai", "Đối chiếu với SGK hoặc hỏi thầy cô"], "dung": 2}]};
+const GHI_NHO = {
+  1: ["Xếp nhóm AI theo <b>ĐẦU RA</b> của ứng dụng", "Đầu ra là <b>một nhãn</b> → phân loại – nhận dạng", "Đầu ra là <b>con số, gợi ý</b> → dự đoán – gợi ý", "Đầu ra là <b>nội dung mới</b> → tạo sinh"],
+  2: ["Prompt tốt = <b>Vai trò + Ngữ cảnh + Nhiệm vụ + Ràng buộc đầu ra</b>", "Kết quả chưa ưng → bổ sung phần còn thiếu rồi hỏi lại", "Không đưa họ tên, số điện thoại, ảnh của mình và bạn vào AI"],
+  3: ["AI <b>hỗ trợ</b>: em vẫn tự làm và hiểu bài · AI <b>làm thay</b>: em chép kết quả", "Prompt gia sư: <b>đừng đưa đáp án, gợi ý từng bước</b>", "3 bước: tự thử trước → hỏi gợi ý → tự kiểm tra với SGK", "Ghi rõ đã dùng AI vào việc gì"] };
+const VAI_NHOM = ["🎮 Cầm máy", "✍️ Thư kí", "🎤 Báo cáo", "⏱️ Canh giờ", "🔎 Kiểm tra"];
+function guiNgay(){ setTimeout(() => dayDi(true), 1500 + Math.floor(Math.random() * 15000)); }
+function demHan(t){ if (!HAN_BTVN[t]) return "Nộp trước buổi học sau.";
+  const con = Date.parse(HAN_BTVN[t]) - Date.now(), d = new Date(HAN_BTVN[t]), som = SOM_BTVN[t] && Date.now() < Date.parse(SOM_BTVN[t]);
+  const ngay = d.toLocaleDateString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" });
+  if (con <= 0) return `⏰ Đã quá hạn (23:00 ngày ${ngay}) — vẫn nộp được, cô xem sau.`;
+  const nd = Math.floor(con / 864e5), gio = Math.floor(con / 36e5) % 24;
+  return `⏳ Hạn nộp: 23:00 ngày ${ngay} — còn ${nd ? nd + " ngày " : ""}${gio} giờ${som ? ` · nộp trước 23:00 ngày ${new Date(SOM_BTVN[t]).toLocaleDateString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" })} được <b>+1 sao</b>` : ""} · bài được chọn chữa: <b>+3 sao</b>`; }
+async function xemCoDuyet(t, o){ const h = hsNay(); if (!h || laGV() || MAU_THU || CHE_DO_THU) return; const r = banGhi(); r.btDuyet = r.btDuyet || {};
+  const ve = d => { if (!d) return; let x = o.querySelector(".bt-duyet"); if (!x) { x = tao(`<div class="bt-duyet phanhoi d" style="display:block"></div>`); o.querySelector(".bt-form").before(x); }
+    x.innerHTML = `👩‍🏫 <b>Cô đã xem:</b> ${d[0] === "Chọn chữa" ? "bài của em được chọn để chữa chung (+3 sao)" : esc(d[0])}${d[1] ? " — " + esc(d[1]) : ""}`; };
+  ve(r.btDuyet[t]); if (!coMang()) return;
+  try { const d = await layJSON(`pvkhoi=1&loc=BTVN&tiet=${t}&lop=${encodeURIComponent(h.lop)}&ma=${encodeURIComponent(h.ma)}&khoa=${KHOA_GUI}`, 20);
+    const p = ((d && d.pv) || []).find(p => p.ma === h.ma);
+    if (p && p.duyet) { r.btDuyet[t] = p.duyet; luuDB(); ve(p.duyet); if (p.duyet[0] === "Chọn chữa") themSao("btvn-chua-" + t, "Bài về nhà tiết " + t + " được chọn chữa", 3); } } catch (e) {} }
+function oVai(t){ if (!laNhom()) return null; const tv = (banGhi().tv || []).slice(); if (tv.length < 2) return null; const lech = (t - 1) % tv.length;
+  return tao(`<div class="o-vai kinh"><b>👥 Vai trong nhóm — Tiết ${t}</b> <span class="mo">(sang tiết sau đổi vai)</span><div class="hang" style="margin-top:6px">${tv.map((sv, i) => `<span class="chip">Bạn số ${esc(sv)}: ${VAI_NHOM[(i + lech) % tv.length] || "🙋 Hỗ trợ"}</span>`).join("")}</div></div>`); }
+function oGhiNho(t){ return tao(`<section class="nv kinh o-ghinho"><h3><span class="so" style="background:var(--nhan2)">📒</span>Ghi nhớ — chép vào vở</h3><ol class="ghinho-ds">${GHI_NHO[t].map(x => `<li>${x}</li>`).join("")}</ol><p class="mo" style="margin:0;font-size:14px">Thư kí đọc to, cả nhóm chép vào vở. Ở nhà mở lại app là xem được — thay cho sách khi làm bài về nhà.</p></section>`); }
+function oGuiLED(t){ const r = banGhi(); r.led = r.led || {};
+  const goi = t === 2 ? "Dán prompt v2 của nhóm (đủ Vai trò – Ngữ cảnh – Nhiệm vụ – Ràng buộc đầu ra)" : "Dán prompt «gia sư gợi mở» của nhóm";
+  const o = tao(`<section class="nv kinh o-guiled"><h3><span class="so" style="background:#f59e0b">📤</span>Gửi prompt lên màn LED</h3><p class="mo" style="margin:0 0 6px">${goi}. Cô chọn vài prompt chạy thật trên màn lớn — chỉ hiện tên lớp, không hiện nhóm. Không ghi họ tên, số điện thoại.</p><textarea rows="3" data-p>${esc(r.led[t] || "")}</textarea><div class="hang"><button class="nut vang" data-g>📤 Gửi lên LED</button><span class="mo" data-tt></span></div></section>`);
+  const tt = o.querySelector("[data-tt]"), ta = o.querySelector("[data-p]");
+  const dem = () => { const c = demPrompt(ta.value); tt.textContent = ta.value.trim() ? `Máy đo: ${c.length}/4 thành phần${c.length < 4 ? " — thiếu " + Object.keys(RX_PROMPT).filter(k => !c.includes(k)).map(k => TEN_PROMPT[k]).join(", ") : " ✓"}` : ""; };
+  ta.oninput = dem; dem();
+  o.querySelector("[data-g]").onclick = () => { const sv = ta.value.trim(); if (soTu(sv) < 6) { am(false); return bao("Prompt hơi ngắn — viết thêm rồi gửi nhé"); }
+    if (/(^|\D)0\d{9}(\D|$)|\S+@\S+\.\S+/.test(sv)) { am(false); return bao("Bỏ số điện thoại, email ra khỏi prompt rồi gửi nhé"); }
+    r.led[t] = sv; luuDB(); const h = hsNay(), c = demPrompt(sv);
+    if (h && !laGV()) { gui("Phần viết", [ngayGio(), h.ma, h.lop, (buoiNay() || {}).buoi || "", t, "LED · prompt", sv, c.length + "/4", "", ""]); themSao("led-" + t, "Gửi prompt lên LED tiết " + t, 1); guiNgay(); }
+    am(true); bao("Đã gửi — chờ cô chọn chiếu nhé!"); tt.textContent = "✅ Đã gửi lúc " + ngayGio(); };
+  return o; }
+function oKTN(t){ const ds = KTN[t], r = banGhi(); r.ktn = r.ktn || {}; const da = r.ktn[t];
+  const o = tao(`<section class="nv kinh o-ktn"><h3><span class="so" style="background:var(--chinh)">🎯</span>Kiểm tra nhanh · 3 câu</h3><p class="mo" style="margin:0 0 6px">Cả nhóm bàn rồi chọn. Chỉ nộp một lần — tỉ lệ đúng của cả khối hiện trên màn LED.</p><div data-cau></div><div class="hang"><button class="nut" data-nop>📤 Nộp 3 câu</button><span class="mo" data-tt></span></div></section>`);
+  const chon = da ? da.chon.slice() : [-1, -1, -1], box = o.querySelector("[data-cau]");
+  const ve = () => { box.innerHTML = ds.map((c, i) => `<div class="ktn-cau"><b>Câu ${i + 1}.</b> ${esc(c.hoi)}<div class="ktn-pa">${c.pa.map((p, k) => `<button class="ktn-nut ${chon[i] === k ? "chon" : ""} ${da ? (k === c.dung ? "dung" : chon[i] === k ? "sai" : "") : ""}" data-i="${i}" data-k="${k}" ${da ? "disabled" : ""}>${"ABC"[k]}. ${esc(p)}</button>`).join("")}</div></div>`).join("");
+    box.querySelectorAll("[data-k]").forEach(b => b.onclick = () => { chon[+b.dataset.i] = +b.dataset.k; ve(); }); };
+  ve(); const nut = o.querySelector("[data-nop]");
+  if (da) { nut.disabled = true; o.querySelector("[data-tt]").textContent = `✅ Đã nộp: đúng ${da.dung}/3 (ô xanh là đáp án đúng)`; }
+  nut.onclick = () => { if (chon.includes(-1)) { am(false); return bao("Chọn đủ 3 câu rồi nộp nhé"); }
+    const dung = chon.filter((k, i) => k === ds[i].dung).length; r.ktn[t] = { chon: chon.slice(), dung, luc: ngayGio() }; luuDB(); const h = hsNay();
+    if (h && !laGV()) { gui("Phần viết", [ngayGio(), h.ma, h.lop, (buoiNay() || {}).buoi || "", t, "KTN · Tiết " + t, chon.map((k, i) => (i + 1) + ":" + "ABC"[k]).join(" "), dung + "/3", "", ""]); if (dung) themSao("ktn-" + t, "Kiểm tra nhanh tiết " + t, dung); guiNgay(); }
+    am(dung === 3); if (dung === 3) banPhao(80); bao(`Đúng ${dung}/3 — ô xanh là đáp án đúng`); o.replaceWith(oKTN(t)); };
+  return o; }
+
+// ── Màn LED: thêm 3 chế độ (kiểm tra nhanh · prompt các nhóm · tỉ lệ nộp bài về nhà)
+let ledChe = "sao", ledTiet = 1;
+const thanhLED = () => `<div class="led-thanh">${[["sao", "⭐ Thi đua lớp"], ["ktn", "🎯 Kiểm tra nhanh"], ["pr", "📤 Prompt các nhóm"], ["bt", "🏠 Nộp bài về nhà"]].map(([k, v]) => `<button class="nut ${ledChe === k ? "" : "phu"}" onclick="ledChe='${k}';${k === "pr" && ledTiet === 1 ? "ledTiet=2;" : ""}veLED()">${v}</button>`).join("")}${ledChe === "ktn" || ledChe === "pr" ? `<span style="margin-left:14px">Tiết</span>${(ledChe === "pr" ? [2, 3] : [1, 2, 3]).map(t => `<button class="nut nho ${ledTiet === t ? "" : "phu"}" onclick="ledTiet=${t};veLED()">${t}</button>`).join("")}` : ""}</div>`;
+function duLieuThuLED(loc, tiet){ const lop = ["10A1", "10A2", "10A3", "10A4"];
+  if (loc === "KTN") return Array.from({ length: 24 }, (_, i) => ({ ma: "N0" + (i % 6 + 1), lop: lop[i % 4], tiet, bai: "KTN", nd: (KTN[tiet] || []).map((c, q) => (q + 1) + ":" + "ABC"[(i + q * 2) % 4 === 0 ? (c.dung + 1) % 3 : c.dung]).join(" ") }));
+  if (loc === "LED") return ["Bạn là chuyên gia dinh dưỡng. Em là học sinh lớp 10, ngân sách 25 nghìn mỗi sáng. Hãy gợi ý thực đơn bữa sáng 7 ngày, trình bày bảng 3 cột.", "Em là gia sư Toán lớp 10. Đừng cho em đáp án, hãy gợi ý từng bước bài giải hệ bất phương trình, chờ em trả lời rồi mới gợi ý tiếp.", "Viết lịch ôn thi."].map((nd, i) => ({ ma: "N0" + (i + 1), lop: lop[i], tiet, bai: "LED · prompt", nd, goi: demPrompt(nd).length + "/4", t: Date.now() - i * 60000 }));
+  return Array.from({ length: 70 }, (_, i) => ({ ma: "HS" + String(i % 33 + 1).padStart(2, "0"), lop: lop[i % 4], tiet: 1 + i % 3, bai: "BTVN" })); }
+async function veLEDThem(){ const m = $("#m-led");
+  const loc = ledChe === "ktn" ? "KTN" : ledChe === "pr" ? "LED" : "BTVN", tiet = ledChe === "bt" ? "" : ledTiet;
+  let d; try { d = MAU_THU ? { ok: true, pv: duLieuThuLED(loc, tiet) } : await layJSON(`pvkhoi=1&loc=${loc}&tiet=${tiet}&khoa=${KHOA_GUI}`, 25); if (!d || !d.ok) throw new Error((d && d.loi) || "Sheet chưa trả lời (Apps Script cần bản có lệnh pvkhoi)"); }
+  catch (e) { m.innerHTML = thanhLED() + `<div class="kinh" style="padding:24px"><div class="phanhoi s" style="display:block">⚠️ ${esc(e.message)}</div><button class="nut" onclick="veLED()">Thử lại</button></div>`; return; }
+  const pv = d.pv || []; let noi = "";
+  if (ledChe === "ktn") { const ds = KTN[tiet] || [], rows = pv.filter(p => +p.tiet === +tiet);
+    const tl = ds.map((c, i) => { let dung = 0, n = 0; const dem = [0, 0, 0]; rows.forEach(p => { const mm = String(p.nd).match(new RegExp((i + 1) + ":([ABC])")); if (mm) { n++; const k = "ABC".indexOf(mm[1]); dem[k]++; if (k === c.dung) dung++; } }); return { c, n, dung, dem }; });
+    noi = `<div class="kinh led-the"><h2>🎯 Kiểm tra nhanh · Tiết ${tiet} — ${rows.length} nhóm đã nộp</h2>${tl.map((x, i) => { const p = x.n ? Math.round(100 * x.dung / x.n) : 0;
+      return `<div class="led-ktn"><div class="led-ktn-hoi"><b>Câu ${i + 1}.</b> ${esc(x.c.hoi)}</div><div class="led-cot to"><div style="width:${Math.max(2, p)}%;background:${p >= 70 ? "linear-gradient(90deg,#34d399,#4dd4ff)" : "linear-gradient(90deg,#fb923c,#f43f5e)"}"></div></div><b class="led-pt">${p}%</b><div class="mo" style="font-size:16px">${x.c.pa.map((sv, k) => `${"ABC"[k]}. ${esc(sv)}: <b>${x.dem[k]}</b>${k === x.c.dung ? " ✓" : ""}`).join(" · ")}${x.n && p < 70 ? " — <b style='color:#fb923c'>chữa ngay câu này</b>" : ""}</div></div>`; }).join("")}</div>`; }
+  if (ledChe === "pr") { const rows = pv.filter(p => +p.tiet === +tiet).sort((a, b) => (b.t || 0) - (a.t || 0)).slice(0, 40); window.__ledPr = rows;
+    noi = `<div class="kinh led-the"><h2>📤 Prompt các nhóm gửi · Tiết ${tiet} — ${rows.length} prompt <small class="mo">(bấm để phóng to, chép chạy AI)</small></h2><div class="led-pr">${rows.map((p, i) => `<button class="led-pr-the" onclick="moPromptLED(${i})"><span class="chip">${esc(p.lop)} · ${esc(p.goi)} thành phần</span><span>${esc(String(p.nd).slice(0, 120))}${String(p.nd).length > 120 ? "…" : ""}</span></button>`).join("") || '<p class="mo">Chưa có nhóm nào gửi.</p>'}</div></div>`; }
+  if (ledChe === "bt") { const lopDs = [...new Set(dsLop().concat(pv.map(p => p.lop)))].sort((x, y) => x.localeCompare(y, "vi", { numeric: true }));
+    const bang = lopDs.map(l => { const em = new Set(pv.filter(p => p.lop === l && !/^N\d/.test(p.ma)).map(p => p.ma)), si = (DB.lop || {})[l] || 0; return { l, n: em.size, si, tl: si ? Math.min(1, em.size / si) : 0 }; }).sort((a, b) => b.tl - a.tl || b.n - a.n);
+    noi = `<div class="kinh led-the"><h2>🏠 Tỉ lệ nộp bài về nhà theo lớp</h2>${bang.map((x, i) => `<div class="led-hang"><span class="led-ten">${["🥇", "🥈", "🥉"][i] || (i + 1) + "."} ${esc(x.l)}</span><div class="led-cot"><div style="width:${Math.max(2, 100 * x.tl)}%"></div></div><b>${x.si ? Math.round(100 * x.tl) + "%" : x.n}</b><small>${x.n}/${x.si || "?"} em</small></div>`).join("") || '<p class="mo">Chưa có bài nộp.</p>'}<p class="mo" style="font-size:15px">Số em đã nộp ít nhất 1 bài ÷ sĩ số lớp. Không hiện tên, mã học sinh.</p></div>`; }
+  m.innerHTML = (MAU_THU ? '<div class="mau-thu">DỮ LIỆU THỬ — không phải lớp thật</div>' : "") + thanhLED() + `<div class="led-dau"><div><div class="mo" style="letter-spacing:2px;font-weight:800">CHUYÊN ĐỀ TRÍ TUỆ NHÂN TẠO · KHỐI 10</div></div><div style="display:flex;gap:18px;align-items:center"><div class="qr-the" style="padding:8px 10px;gap:8px"><img src="${QR_APP}" alt="Mã QR mở app" style="width:90px;height:90px"><div style="font-size:14px"><b>Quét để mở app</b></div></div><div class="led-gio" id="ledGio"></div></div></div>` + noi;
+  veGioLED(); if ($("#m-led").classList.contains("on") && ledChe !== "pr") ledHen = setTimeout(veLED, 30000); }
+function moPromptLED(i){ const ds = window.__ledPr || []; if (!ds.length) return;
+  const o = tao(`<div class="man-chua"><div class="chua-dau"><b>📤 Prompt gửi lên LED</b><span data-so></span><button class="nut phu nho" data-x>✕ Đóng</button></div><div class="chua-noi"></div><div class="chua-duoi"><button class="nut phu" data-l>◀ Trước</button><button class="nut vang" data-c>📋 Chép để chạy AI</button><button class="nut" data-n>Sau ▶</button></div></div>`);
+  const ve = () => { const p = ds[i]; o.querySelector("[data-so]").textContent = `${i + 1}/${ds.length} · lớp ${p.lop} · ${p.goi} thành phần`; o.querySelector(".chua-noi").innerHTML = `<div class="chua-bai" style="font-size:clamp(22px,3vw,40px)">${esc(p.nd).replace(/\n/g, "<br>")}</div>`; };
+  o.querySelector("[data-x]").onclick = () => o.remove(); o.querySelector("[data-l]").onclick = () => { i = (i - 1 + ds.length) % ds.length; ve(); }; o.querySelector("[data-n]").onclick = () => { i = (i + 1) % ds.length; ve(); };
+  o.querySelector("[data-c]").onclick = () => { if (!navigator.clipboard) return bao("Bôi đen rồi bấm Ctrl+C"); navigator.clipboard.writeText(ds[i].nd).then(() => bao("Đã chép — dán vào công cụ AI để chạy"), () => bao("Máy chưa cho chép — bôi đen rồi Ctrl+C")); };
+  o.tabIndex = 0; o.onkeydown = e => { if (e.key === "ArrowRight") o.querySelector("[data-n]").click(); if (e.key === "ArrowLeft") o.querySelector("[data-l]").click(); if (e.key === "Escape") o.remove(); };
+  document.body.appendChild(o); o.focus(); ve(); }
+
+// ── Trang cô: bài về nhà, chọn bài chữa, màn chữa bài
+let btTiet = 1, btChon = {};
+async function layBaiVeNha(t, lop){
+  if (MAU_THU) return { pv: duLieuThuBT(t), anh: [] };
+  let d = null; try { d = await layJSON(`pvkhoi=1&loc=BTVN&tiet=${t}&khoa=${KHOA_GUI}` + (lop ? "&lop=" + encodeURIComponent(lop) : ""), 25); } catch (e) {}
+  if (d && d.ok && d.pv) return d;
+  const pv = [], anh = []; for (const l of lop ? [lop] : dsLop()) { try { const x = await layTongHop(l); x.pv.filter(p => /^BTVN/.test(p.bai) && +p.tiet === +t).forEach(p => pv.push(Object.assign({ lop: l }, p))); x.anh.filter(a => a.buoi === "BTVN" && +a.tiet === +t).forEach(a => anh.push(Object.assign({ lop: l }, a))); } catch (e) {} }
+  return { pv, anh };
+}
+function duLieuThuBT(t){ const mau = { 2: ["Viết thực đơn bữa sáng", "Bạn là chuyên gia dinh dưỡng cho học sinh lớp 10. Em đi học cả ngày, ngân sách 25 nghìn/ngày. Hãy gợi ý thực đơn bữa sáng 7 ngày, trình bày bảng 3 cột Ngày – Món – Giá."], 1: ["FaceID | mở khoá | ảnh mặt | khớp/không khớp | Phân loại / nhận dạng"] };
+  return Array.from({ length: 6 }, (_, i) => ({ ma: "N0" + (i + 1), lop: "10D" + (3 + i % 2), tiet: t, bai: "BTVN · " + BTVN[t].ten, nd: (mau[t] || ["Bài làm thử số " + (i + 1)]).join("\n"), goi: i % 3 ? "Đạt" : "Chưa đạt", tc: i % 3 ? "4/4" : "2/4", nx: i % 3 ? "Đủ thành phần." : "Còn thiếu Vai trò, Ràng buộc đầu ra.", duyet: i === 1 ? ["Chọn chữa", ""] : null })); }
+function gvBT(el){
+  el.innerHTML = `<div class="kinh" style="padding:16px;margin-bottom:14px"><div class="hang"><b>🏠 Bài về nhà</b><select id="btT" style="width:auto">${Object.keys(BTVN).map(k => `<option value="${k}" ${+k === btTiet ? "selected" : ""}>Tiết ${k} · ${esc(BTVN[k].ten)}</option>`).join("")}</select>
+    <select id="btL" style="width:auto"><option value="">Cả khối</option>${dsLop().map(l => `<option>${esc(l)}</option>`).join("")}</select><button class="nut" id="btTai">📡 Tải bài nộp</button><button class="nut vang" id="btChua">🧑‍🏫 Chữa bài (chiếu LED)</button></div>
+    <p class="mo" style="font-size:14px;margin:6px 0 0">Đánh dấu ⭐ <b>Chọn chữa</b> cho 3–5 bài tiêu biểu (cả bài tốt lẫn bài còn lỗi). Màn chữa bài <b>không hiện mã HS, tên nhóm</b>. Máy gợi ý mức đạt theo tiêu chí; cô chốt.</p></div><div id="btKQ"></div>`;
+  $("#btT").onchange = () => { btTiet = +$("#btT").value; };
+  $("#btTai").onclick = async () => { btTiet = +$("#btT").value; const kq = $("#btKQ"); kq.innerHTML = '<p class="mo">Đang tải…</p>';
+    const d = await layBaiVeNha(btTiet, $("#btL").value); const moi = {}; (d.pv || []).forEach(p => moi[p.lop + "|" + p.ma] = p); const ds = Object.values(moi);
+    btChon[btTiet] = ds.filter(p => p.duyet && p.duyet[0] === "Chọn chữa").map(p => p.lop + "|" + p.ma);
+    const anhCua = p => (d.anh || []).filter(a => a.lop === p.lop && a.ma === p.ma).map(a => a.link);
+    const dat = ds.filter(p => p.goi === "Đạt").length;
+    kq.innerHTML = `<div class="kpi"><div class="kinh"><span class="mo">Bài đã nộp</span><b>${ds.length}</b></div><div class="kinh"><span class="mo">Máy gợi ý đạt</span><b>${dat}</b></div><div class="kinh"><span class="mo">Đã chọn chữa</span><b id="btSoChon">${btChon[btTiet].length}</b></div><div class="kinh"><span class="mo">Có ảnh bài làm</span><b>${ds.filter(p => anhCua(p).length).length}</b></div></div>
+      ${ds.map((p, i) => `<div class="the-viet"><div class="hang" style="justify-content:space-between"><b>${esc(p.ma)} · ${esc(p.lop)}</b><span class="chip">${p.duyet ? "Cô: " + esc(p.duyet[0]) : "Máy gợi ý: " + esc(p.goi) + " (" + esc(p.tc) + ")"}</span></div>
+        <div class="nd-viet">${esc(p.nd)}</div><div class="mo" style="font-size:14px">🤖 ${esc(p.nx)}</div>${anhCua(p).map(u => `<a class="nut phu nho" target="_blank" rel="noopener" href="${esc(u)}">🖼️ Ảnh bài làm</a>`).join(" ")}
+        <div class="hang"><input data-nx="${i}" placeholder="Ghi chú để chữa / nhận xét" style="flex:1;min-width:200px" value="${esc(p.duyet ? p.duyet[1] : "")}"><button class="nut vang nho" data-d="${i}" data-m="Chọn chữa">⭐ Chọn chữa</button><button class="nut nho" data-d="${i}" data-m="Đạt">✅ Đạt</button><button class="nut phu nho" data-d="${i}" data-m="Chưa đạt">✏️ Chưa đạt</button></div></div>`).join("") || '<p class="mo">Chưa có bài nộp.</p>'}`;
+    kq.querySelectorAll("[data-d]").forEach(n => n.onclick = () => { const p = ds[+n.dataset.d], nx = kq.querySelector(`[data-nx="${n.dataset.d}"]`).value.trim(), m = n.dataset.m;
+      gui("Cô duyệt", [ngayGio(), p.ma, p.lop, p.tiet, p.bai, m, nx]); p.duyet = [m, nx]; const k = p.lop + "|" + p.ma;
+      btChon[btTiet] = btChon[btTiet].filter(x => x !== k); if (m === "Chọn chữa") btChon[btTiet].push(k);
+      n.closest(".the-viet").querySelector(".chip").textContent = "Cô: " + m; $("#btSoChon").textContent = btChon[btTiet].length; am(true); });
+    window.__btDs = ds; window.__btAnh = d.anh || []; };
+  $("#btChua").onclick = () => { const ds = (window.__btDs || []).filter(p => (btChon[btTiet] || []).includes(p.lop + "|" + p.ma)); if (!ds.length) return bao("Cô tải bài nộp và chọn ⭐ ít nhất một bài trước");
+    moChuaBai(ds, window.__btAnh || []); };
+  if (MAU_THU) $("#btTai").click();
+}
+function moChuaBai(ds, anh){
+  let i = 0; const o = tao(`<div class="man-chua"><div class="chua-dau"><b>🧑‍🏫 Cùng chữa bài về nhà · Tiết ${btTiet} — ${esc(BTVN[btTiet].ten)}</b><span data-so></span><button class="nut phu nho" data-x>✕ Đóng</button></div><div class="chua-noi"></div>
+    <div class="chua-duoi"><button class="nut phu" data-l>◀ Bài trước</button><label class="mo"><input type="checkbox" data-lop style="width:20px;height:20px"> hiện lớp</label><button class="nut" data-n>Bài sau ▶</button></div></div>`);
+  const id = u => (String(u).match(/\/d\/([\w-]+)/) || [])[1];
+  const ve = () => { const p = ds[i], hinh = anh.filter(a => a.lop === p.lop && a.ma === p.ma).map(a => a.link);
+    o.querySelector("[data-so]").textContent = `Bài ${i + 1}/${ds.length}${o.querySelector("[data-lop]").checked ? " · lớp " + p.lop : ""}`;
+    o.querySelector(".chua-noi").innerHTML = `<div class="chua-bai">${esc(p.nd).replace(/\n/g, "<br>")}</div>${hinh.map(u => `<a href="${esc(u)}" target="_blank" rel="noopener"><img class="chua-anh" alt="Ảnh bài làm" src="https://drive.google.com/thumbnail?id=${id(u)}&sz=w1200" onerror="this.replaceWith(Object.assign(document.createElement('span'),{textContent:'🖼️ Mở ảnh bài làm'}))"></a>`).join("")}
+      <div class="chua-goi"><b>Cùng soi:</b> ${esc(BTVN[btTiet].cham ? "" : "")}${p.duyet && p.duyet[1] ? "📝 " + esc(p.duyet[1]) + " · " : ""}🤖 ${esc(p.nx)}</div>`; };
+  o.querySelector("[data-x]").onclick = () => o.remove(); o.querySelector("[data-l]").onclick = () => { i = (i - 1 + ds.length) % ds.length; ve(); }; o.querySelector("[data-n]").onclick = () => { i = (i + 1) % ds.length; ve(); };
+  o.querySelector("[data-lop]").onchange = ve; o.tabIndex = 0; o.onkeydown = e => { if (e.key === "ArrowRight") o.querySelector("[data-n]").click(); if (e.key === "ArrowLeft") o.querySelector("[data-l]").click(); if (e.key === "Escape") o.remove(); };
+  document.body.appendChild(o); o.focus(); ve();
+}
+
 /* ============ BUỔI CẢ KHỐI · MÀN LED · TIẾT TOÁN ============ */
 const BUOI_CD = [{ id: "B1", ten: "Buổi 1 · Tiết 1–4", ds: [1,2,3,4] }, { id: "B2", ten: "Buổi 2 · Tiết 5–8", ds: [5,6,7,8] }, { id: "B3", ten: "Buổi 3 · Tiết 9–12", ds: [9,10,11,12] }];
 const nhanTiet = b => b.ds && b.ds.length > 1 ? `Tiết ${b.ds[0]}–${b.ds[b.ds.length - 1]}` : `Tiết ${b.tiet}`;
@@ -1660,6 +1870,7 @@ let ledHen = null;
 async function veLED(){
   const m = $("#m-led"); clearTimeout(ledHen);
   if (!laGV() && !laToan() && !MAU_THU) { m.innerHTML = `<div class="kinh" style="padding:24px;text-align:center"><h2>📺 Màn LED cả khối</h2><p class="mo">Cô đăng nhập trang giáo viên trên máy nối màn LED rồi mở lại.</p></div>`; return; }
+  if (ledChe !== "sao") return veLEDThem();
   if (!m.innerHTML) m.innerHTML = '<div class="led-dau"><h1>Đang lấy dữ liệu cả khối…</h1></div>';
   let kq; try { kq = await layCaKhoi(); } catch (e) { m.innerHTML = `<div class="kinh" style="padding:24px"><h2>📺 Màn LED</h2><div class="phanhoi s" style="display:block">⚠️ ${esc(e.message)}</div><button class="nut" onclick="veLED()">Thử lại</button></div>`; return; }
   const b = Object.values(DB.buoiGV || {}).sort((x, y) => y.bd - x.bd)[0], ds = b ? (b.ds || [b.tiet]) : [1, 2, 3, 4];
@@ -1668,7 +1879,7 @@ async function veLED(){
     const xongT = ds.map(t => arr.filter(o => o.tiet && o.tiet[t] && o.tiet[t].xong).length); return { l, tb: tong / si, tong, thamGia: Object.keys(se).length, si, xongT, nhom: arr.length }; });
   const xep = bang.slice().sort((x, y) => y.tb - x.tb), max = Math.max(1, ...bang.map(x => x.tb)), huy = ["🥇","🥈","🥉"];
   const tongNhom = bang.reduce((s, x) => s + x.nhom, 0) || 1;
-  m.innerHTML = `${MAU_THU ? '<div class="mau-thu">DỮ LIỆU THỬ — không phải lớp thật</div>' : ""}
+  m.innerHTML = `${MAU_THU ? '<div class="mau-thu">DỮ LIỆU THỬ — không phải lớp thật</div>' : ""}${thanhLED()}
    <div class="led-dau"><div><div class="mo" style="letter-spacing:2px;font-weight:800">CHUYÊN ĐỀ TRÍ TUỆ NHÂN TẠO · KHỐI 10</div><h1>${b ? esc(BUOI_CD.find(x => x.ds[0] === ds[0])?.ten || nhanTiet(b)) : "Hành trình 12 tiết"}</h1></div>
      <div style="display:flex;gap:18px;align-items:center"><div class="qr-the" style="padding:8px 10px;gap:8px"><img src="${QR_APP}" alt="Mã QR mở app" style="width:110px;height:110px"><div style="font-size:15px;line-height:1.3"><b>Quét để mở app</b><br><span style="font-size:12px">${esc(LINK_APP.replace("https://", ""))}</span></div></div><div class="led-gio" id="ledGio"></div></div></div>
    <div class="led-luoi"><div class="kinh led-the"><h2>⭐ Thi đua sao — trung bình mỗi em</h2>
