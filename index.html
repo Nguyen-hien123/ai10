@@ -144,6 +144,7 @@ input[type=range]{padding:0;border:0;background:transparent;accent-color:var(--n
 .an{display:none!important}
 #phao{position:fixed;inset:0;pointer-events:none;z-index:50}
 .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#fff;color:#1b2550;padding:12px 20px;border-radius:14px;font-weight:700;z-index:60;box-shadow:0 10px 30px rgba(0,0,0,.4);display:none}
+body.dung-thu::before{content:"👀 GIÁO VIÊN DÙNG THỬ · dữ liệu mẫu · không lưu, không gửi";position:fixed;top:4px;left:50%;transform:translateX(-50%);z-index:95;background:#ff6b81;color:#fff;padding:3px 12px;border-radius:999px;font-weight:800;font-size:12px;pointer-events:none;white-space:nowrap}
 .mau-thu{background:repeating-linear-gradient(45deg,#ff6b81,#ff6b81 12px,#ff8fa0 12px,#ff8fa0 24px);color:#fff;text-align:center;font-weight:900;padding:4px;border-radius:10px;margin-bottom:10px}
 .bay-svg{cursor:pointer}
 .dong-ho{display:flex;flex-direction:column;align-items:flex-end;line-height:1.15;font-variant-numeric:tabular-nums;min-width:132px}
@@ -198,6 +199,7 @@ input[type=range]{padding:0;border:0;background:transparent;accent-color:var(--n
 .ktn-nut{text-align:left;padding:10px 12px;border-radius:12px;border:2px solid rgba(255,255,255,.18);background:rgba(255,255,255,.05);color:var(--chu);font:inherit;cursor:pointer}
 .ktn-nut.chon{border-color:var(--chinh);background:rgba(124,140,255,.22)}.ktn-nut.dung{border-color:#34d399;background:rgba(52,211,153,.2)}.ktn-nut.sai{border-color:#f43f5e;background:rgba(244,63,94,.18)}
 .o-guiled{border-color:rgba(245,158,11,.5)}.bt-duyet{margin:8px 0}
+.led-diem{grid-template-columns:140px 1fr 60px auto}
 .led-thanh{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:12px}
 .led-ktn{margin:14px 0 18px}.led-ktn-hoi{font-size:22px;margin-bottom:6px}.led-ktn .led-cot{display:inline-block;width:calc(100% - 110px);vertical-align:middle}.led-pt{font-size:30px;margin-left:12px}
 .led-pr{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px}.led-pr-the{display:flex;flex-direction:column;gap:6px;text-align:left;padding:12px;border-radius:14px;border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.06);color:var(--chu);font:inherit;font-size:16px;cursor:pointer}
@@ -1224,13 +1226,18 @@ const bam = s => { let h = 2166136261; for (const c of String(s).trim().toUpperC
 const KT_MK = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
 function mkHS(lop, m){ let n = parseInt(bam("MK|" + String(lop).trim().toUpperCase() + "|" + String(m).trim().toUpperCase() + "|" + MA_GV_BAM), 36), s = "";
   for (let i = 0; i < 4; i++) { s += KT_MK[n % KT_MK.length]; n = Math.floor(n / KT_MK.length); } return s; }
-const guiVe = () => (DB.gui || GUI_VE || "").trim();
+const guiVe = () => DB.vai === "thu" ? "" : (DB.gui || GUI_VE || "").trim();   // GV dùng thử: không chạm dữ liệu thật
 const coMang = () => !!guiVe() && navigator.onLine && !CHE_DO_THU;
 const ngayGio = () => new Date().toLocaleString("vi-VN", { hour12: false });
 const homNay = () => { const d = new Date(); return d.getFullYear() + String(d.getMonth()+1).padStart(2,"0") + String(d.getDate()).padStart(2,"0"); };
 const esc = s => String(s == null ? "" : s).replace(/[&<>"]/g, c => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;" }[c]));
 const hsNay = () => { const k = DB.ai || ""; return k.includes("|") ? { lop: k.split("|")[0], ma: k.split("|")[1] } : null; };
-const laGV = () => DB.vai === "gv" || DB.vai === "tin";
+const laGV = () => DB.vai === "gv" || DB.vai === "tin" || DB.vai === "thu";
+const laThu = () => DB.vai === "thu";
+const MA_DUNG_THU = "DUNGTHU";               // mã cho đồng nghiệp trải nghiệm trang cô (dữ liệu mẫu)
+function vaoDungThu(){ DB.vai = "thu"; DB.ai = "GV-DUNGTHU"; MAU_THU = true; CHE_DO_THU = true; document.body.classList.add("dung-thu");
+  DB.lop = { "10D3": 52, "10D4": 50 }; DB.buoiGV = { "10D3": { lop: "10D3", tiet: 1, ds: [1,2,3,4], khoi: true, phut: 200, bd: Date.now() - 62 * 60000, buoi: homNay() + "-B1" } }; DB.cho = [];
+  gvTab = "buoi"; am(true); veDau(); di("gv"); bao("Chế độ dùng thử: dữ liệu mẫu, không lưu, không gửi về Sheet"); }
 const laToan = () => DB.vai === "toan";
 const laChu = () => DB.vai === "gv";
 const laTin = () => DB.vai === "tin";
@@ -1262,7 +1269,7 @@ function dayDi(ep){
     .catch(() => { dangDay = false; veTrangThaiMang(); });
 }
 addEventListener("online", dayDi); setInterval(dayDi, 30000);
-function layJSON(q, giay){ return new Promise((ok, loi) => { if (!guiVe() || !navigator.onLine) return loi(new Error("chưa có mạng hoặc chưa gắn link Sheet"));
+function layJSON(q, giay){ return new Promise((ok, loi) => { if (DB.vai === "thu") return loi(new Error("Bản dùng thử chỉ có dữ liệu mẫu — phần này cần dữ liệu thật của cô chủ app")); if (!guiVe() || !navigator.onLine) return loi(new Error("chưa có mạng hoặc chưa gắn link Sheet"));
   const t = setTimeout(() => loi(new Error("Sheet trả lời chậm")), (giay || 12) * 1000);
   fetch(guiVe() + (guiVe().includes("?") ? "&" : "?") + q).then(r => r.json()).then(d => { clearTimeout(t); ok(d); }).catch(e => { clearTimeout(t); loi(e); }); }); }
 function veTrangThaiMang(){ const e = $("#mangTT"); if (!e) return; const n = (DB.cho || []).length;
@@ -1298,7 +1305,7 @@ function veDongHo(){ const e = $("#dongHo"); if (!e) return; const d = new Date(
   e.innerHTML = s; }
 setInterval(veDongHo, 1000);
 function veDau(){ const h = hsNay(), a = $("#aiDau");
-  if (a) a.innerHTML = laToan() ? `📐 <b>GV Toán</b>` : laTin() ? `💻 <b>${esc(DB.ai.replace("GV-TIN", "GV Tin "))}</b>` : laGV() ? `👩‍🏫 <b>Cô</b>` : h ? `${laNhom() ? `👥 <b>Nhóm ${+h.ma.slice(1)}</b> · ${esc(h.lop)} <small class="mo">(${(banGhi().tv || []).length} bạn)</small>` : `🧑‍🎓 <b>${esc(h.ma)}</b> · ${esc(h.lop)}`} <span id="saoDau" class="sao-dau">⭐ ${tongSao()}</span>` : "";
+  if (a) a.innerHTML = laThu() ? `👀 <b>GV dùng thử</b>` : laToan() ? `📐 <b>GV Toán</b>` : laTin() ? `💻 <b>${esc(DB.ai.replace("GV-TIN", "GV Tin "))}</b>` : laGV() ? `👩‍🏫 <b>Cô</b>` : h ? `${laNhom() ? `👥 <b>Nhóm ${+h.ma.slice(1)}</b> · ${esc(h.lop)} <small class="mo">(${(banGhi().tv || []).length} bạn)</small>` : `🧑‍🎓 <b>${esc(h.ma)}</b> · ${esc(h.lop)}`} <span id="saoDau" class="sao-dau">⭐ ${tongSao()}</span>` : "";
   const nx = $("#nutRa"); if (nx) nx.style.display = (h || laGV() || laToan()) ? "" : "none"; veTrangThaiMang(); }
 
 // ── ĐĂNG NHẬP
@@ -1346,6 +1353,7 @@ async function veDangNhap(){
     vaoHS(lop, ma, "mật khẩu");
   };
   $("#dnVaoGV").onclick = () => { const ma_ = $("#dnMaGV").value.trim().toUpperCase(), kTin = [1, 2, 3].find(k => ma_ === maGVTin(k));
+    if (ma_.replace(/[\s-]/g, "") === MA_DUNG_THU) return vaoDungThu();
     if (kTin) { DB.vai = "tin"; DB.ai = "GV-TIN" + kTin; gvTab = "buoi"; luuDB(); am(true); veDau(); return di("gv"); }
     if (ma_ === maGVToan()) { DB.vai = "toan"; DB.ai = "GV-TOAN"; gvTab = "toan"; luuDB(); am(true); veDau(); return di("gv"); }
     if (bam($("#dnMaGV").value) !== MA_GV_BAM) { am(false); return phanHoi(ph, false, "Mã giáo viên chưa đúng."); }
@@ -1384,7 +1392,7 @@ function moiBatSinhTrac(lop, ma){
       DB.bio = { id: b64(c.rawId), lop, ma }; luuDB(); am(true); o.remove(); bao("Đã bật khuôn mặt / vân tay cho điện thoại này");
     } catch (e) { am(false); bao("Chưa bật được — em vẫn dùng mật khẩu bình thường"); } };
 }
-function dangXuat(){ DB.ai = ""; DB.vai = ""; DB.buoi = null; luuDB(); veDau(); di("dang-nhap"); }
+function dangXuat(){ if (laThu()) { history.replaceState(null, "", location.pathname + location.search); return location.reload(); } DB.ai = ""; DB.vai = ""; DB.buoi = null; luuDB(); veDau(); di("dang-nhap"); }
 async function layTienDo(bam_){
   const h = hsNay(); if (!h) return;
   try { const d = await layJSON("kp=1&lop=" + encodeURIComponent(h.lop) + "&ma=" + encodeURIComponent(h.ma), 10);
@@ -1493,7 +1501,7 @@ function veGV(){
   if (!laGV() && !laToan() && !MAU_THU) { m.innerHTML = `<div class="kinh" style="padding:24px;max-width:560px;margin:auto;text-align:center"><h2>👩‍🏫 Trang giáo viên</h2><p class="mo">Cô đăng xuất rồi chọn «Giáo viên» ở màn đăng nhập, gõ mã giáo viên.</p><button class="nut" onclick="dangXuat()">Đến màn đăng nhập</button></div>`; return; }
   m.innerHTML = `${MAU_THU ? '<div class="mau-thu">DỮ LIỆU THỬ — không phải lớp thật</div>' : ""}
    <div class="kinh" style="padding:16px 20px;margin-bottom:14px"><h1 style="margin:0 0 8px">${laToan() ? "📐 Trang GV Toán" : laTin() ? "💻 Trang " + esc(DB.ai.replace("GV-TIN", "GV Tin ")) : "👩‍🏫 Trang giáo viên"}</h1>
-    <div class="tab-gv">${TAB_GV.filter(([k]) => laToan() ? (k === "led" || k === "toan" || k === "bt") : laTin() ? (k !== "noi" && k !== "may") : true).map(([k, v]) => `<button class="${k === gvTab ? "on" : ""}" data-k="${k}">${v}</button>`).join("")}</div></div><div id="gvNoi"></div>`;
+    <div class="tab-gv">${TAB_GV.filter(([k]) => laToan() ? (k === "led" || k === "toan" || k === "bt") : (laTin() || laThu()) ? (k !== "noi" && k !== "may") : true).map(([k, v]) => `<button class="${k === gvTab ? "on" : ""}" data-k="${k}">${v}</button>`).join("")}</div></div><div id="gvNoi"></div>`;
   if (laToan() && gvTab !== "toan") gvTab = "toan";
   if (laTin() && (gvTab === "noi" || gvTab === "may")) gvTab = "buoi";
   m.querySelectorAll(".tab-gv button").forEach(b => b.onclick = () => { if (b.dataset.k === "led") return di("led"); gvTab = b.dataset.k; veGV(); });
@@ -1724,12 +1732,22 @@ function oKTN(t){ const ds = KTN[t], r = banGhi(); r.ktn = r.ktn || {}; const da
 
 // ── Màn LED: thêm 3 chế độ (kiểm tra nhanh · prompt các nhóm · tỉ lệ nộp bài về nhà)
 let ledChe = "sao", ledTiet = 1;
-const thanhLED = () => `<div class="led-thanh">${[["sao", "⭐ Thi đua lớp"], ["ktn", "🎯 Kiểm tra nhanh"], ["pr", "📤 Prompt các nhóm"], ["bt", "🏠 Nộp bài về nhà"]].map(([k, v]) => `<button class="nut ${ledChe === k ? "" : "phu"}" onclick="ledChe='${k}';${k === "pr" && ledTiet === 1 ? "ledTiet=2;" : ""}veLED()">${v}</button>`).join("")}${ledChe === "ktn" || ledChe === "pr" ? `<span style="margin-left:14px">Tiết</span>${(ledChe === "pr" ? [2, 3] : [1, 2, 3]).map(t => `<button class="nut nho ${ledTiet === t ? "" : "phu"}" onclick="ledTiet=${t};veLED()">${t}</button>`).join("")}` : ""}</div>`;
+const thanhLED = () => `<div class="led-thanh">${[["diem", "🏆 Điểm thi đua (chỉ LED)"], ["sao", "⭐ Sao trên app"], ["ktn", "🎯 Kiểm tra nhanh"], ["pr", "📤 Prompt các nhóm"], ["bt", "🏠 Nộp bài về nhà"]].map(([k, v]) => `<button class="nut ${ledChe === k ? "" : "phu"}" onclick="ledChe='${k}';${k === "pr" && ledTiet === 1 ? "ledTiet=2;" : ""}veLED()">${v}</button>`).join("")}${ledChe === "ktn" || ledChe === "pr" ? `<span style="margin-left:14px">Tiết</span>${(ledChe === "pr" ? [2, 3] : [1, 2, 3]).map(t => `<button class="nut nho ${ledTiet === t ? "" : "phu"}" onclick="ledTiet=${t};veLED()">${t}</button>`).join("")}` : ""}</div>`;
 function duLieuThuLED(loc, tiet){ const lop = ["10A1", "10A2", "10A3", "10A4"];
   if (loc === "KTN") return Array.from({ length: 24 }, (_, i) => ({ ma: "N0" + (i % 6 + 1), lop: lop[i % 4], tiet, bai: "KTN", nd: (KTN[tiet] || []).map((c, q) => (q + 1) + ":" + "ABC"[(i + q * 2) % 4 === 0 ? (c.dung + 1) % 3 : c.dung]).join(" ") }));
   if (loc === "LED") return ["Bạn là chuyên gia dinh dưỡng. Em là học sinh lớp 10, ngân sách 25 nghìn mỗi sáng. Hãy gợi ý thực đơn bữa sáng 7 ngày, trình bày bảng 3 cột.", "Em là gia sư Toán lớp 10. Đừng cho em đáp án, hãy gợi ý từng bước bài giải hệ bất phương trình, chờ em trả lời rồi mới gợi ý tiếp.", "Viết lịch ôn thi."].map((nd, i) => ({ ma: "N0" + (i + 1), lop: lop[i], tiet, bai: "LED · prompt", nd, goi: demPrompt(nd).length + "/4", t: Date.now() - i * 60000 }));
   return Array.from({ length: 70 }, (_, i) => ({ ma: "HS" + String(i % 33 + 1).padStart(2, "0"), lop: lop[i % 4], tiet: 1 + i % 3, bai: "BTVN" })); }
-async function veLEDThem(){ const m = $("#m-led");
+// ── Bản chỉ dùng màn LED: cô cộng điểm thi đua cho từng lớp (lưu trên máy nối LED)
+function diemLop(){ const b = homNay(); DB.diemLop = DB.diemLop || {}; return DB.diemLop[b] = DB.diemLop[b] || {}; }
+function congDiem(l, n){ const d = diemLop(); d[l] = Math.max(0, (d[l] || 0) + n); DB.diemLS = (DB.diemLS || []).concat([[l, n]]).slice(-50); luuDB(); am(n > 0); veLED(); }
+function hoanDiem(){ const x = (DB.diemLS || []).pop(); if (!x) return bao("Chưa có lần cộng nào để hoàn"); const d = diemLop(); d[x[0]] = Math.max(0, (d[x[0]] || 0) - x[1]); luuDB(); veLED(); }
+function veLEDDiem(m){ const d = diemLop(), lopDs = [...new Set(dsLop().concat(Object.keys(d)))].sort((x, y) => x.localeCompare(y, "vi", { numeric: true }));
+  const xep = lopDs.map(l => ({ l, n: d[l] || 0 })).sort((a, b) => b.n - a.n), max = Math.max(1, ...xep.map(x => x.n)), huy = ["🥇", "🥈", "🥉"];
+  m.innerHTML = (MAU_THU ? '<div class="mau-thu">DỮ LIỆU THỬ — không phải lớp thật</div>' : "") + thanhLED() + `<div class="led-dau"><div><div class="mo" style="letter-spacing:2px;font-weight:800">CHUYÊN ĐỀ TRÍ TUỆ NHÂN TẠO · KHỐI 10</div><h1>🏆 Thi đua lớp hôm nay</h1></div><div class="led-gio" id="ledGio"></div></div>
+   <div class="kinh led-the">${lopDs.length ? xep.map((x, i) => `<div class="led-hang led-diem"><span class="led-ten">${huy[i] && x.n ? huy[i] : (i + 1) + "."} ${esc(x.l)}</span><div class="led-cot"><div style="width:${Math.max(2, 100 * x.n / max)}%"></div></div><b>${x.n}</b><span class="hang" style="gap:6px;flex-wrap:nowrap"><button class="nut nho" onclick="congDiem('${esc(x.l)}',1)">+1</button><button class="nut vang nho" onclick="congDiem('${esc(x.l)}',2)">+2</button></span></div>`).join("") : '<p class="mo">Cô nhập danh sách lớp ở thẻ 🏫 Lớp & mật khẩu trước.</p>'}
+   <div class="hang" style="margin-top:10px"><button class="nut phu nho" onclick="hoanDiem()">↶ Hoàn lần cộng vừa rồi</button><span class="mo" style="font-size:15px">+1: lớp trả lời đúng, đại diện lên bảng làm đúng · +2: lớp thắng «đấu prompt», trật tự nhất. Điểm lưu trên máy này, theo ngày.</span></div></div>`;
+  veGioLED(); }
+async function veLEDThem(){ const m = $("#m-led"); if (ledChe === "diem") return veLEDDiem(m);
   const loc = ledChe === "ktn" ? "KTN" : ledChe === "pr" ? "LED" : "BTVN", tiet = ledChe === "bt" ? "" : ledTiet;
   let d; try { d = MAU_THU ? { ok: true, pv: duLieuThuLED(loc, tiet) } : await layJSON(`pvkhoi=1&loc=${loc}&tiet=${tiet}&khoa=${KHOA_GUI}`, 25); if (!d || !d.ok) throw new Error((d && d.loi) || "Sheet chưa trả lời (Apps Script cần bản có lệnh pvkhoi)"); }
   catch (e) { m.innerHTML = thanhLED() + `<div class="kinh" style="padding:24px"><div class="phanhoi s" style="display:block">⚠️ ${esc(e.message)}</div><button class="nut" onclick="veLED()">Thử lại</button></div>`; return; }
@@ -1983,7 +2001,7 @@ function di(man, giuHash){
 }
 function theoHash(){
   const h = location.hash.slice(1).split("&"); const p = {}; h.slice(1).forEach(x=>{ const [k,v]=x.split("="); p[k]=v; });
-  MAU_THU = p.mau==="1"; if(p.chup==="1") document.body.classList.add("chup");
+  MAU_THU = p.mau==="1" || DB.vai==="thu"; if (DB.vai==="thu") CHE_DO_THU = true; if(p.chup==="1") document.body.classList.add("chup");
   if(p.cai){ try{ const u=decodeURIComponent(p.cai); if(/^https:\/\/script\.google\.com\/macros\/s\/[\w-]+\/exec$/.test(u)){ DB.gui=u; luuDB(); bao("Đã gắn link Google Sheet của cô cho máy này"); } }catch(e){} history.replaceState(null,"","#ban-do"); }
   if(p.chup==="1" || MAU_THU){ CHE_DO_THU = true; if(p.vai==="gv"){ DB.vai="gv"; DB.ai="GV-THU"; } else if(p.vai!=="moi"){ DB.vai="hs"; DB.ai="10D3|HS07"; DB.lop={"10D3":52,"10D4":50}; DB.buoi={lop:"10D3",tiet:1,ds:[1,2,3,4],khoi:true,phut:200,bd:Date.now()-62*60000,buoi:homNay()+"-B1"}; if(p.nhom==="1"){ DB.ai="10D3|N05"; banGhi().tv=["HS03","HS07","HS12","HS18","HS25"]; banGhi().saoBuoi={[homNay()+"-B1"]:11}; } banGhi().saoBuoi={[homNay()+"-T4"]:9,[homNay()+"-T3"]:14}; } else { DB.ai=""; } if(p.vai==="gv"){ DB.lop={"10D3":52,"10D4":50}; DB.buoiGV={"10D3":{lop:"10D3",tiet:1,ds:[1,2,3,4],khoi:true,phut:200,bd:Date.now()-62*60000,buoi:homNay()+"-B1"}}; } if(p.toan) toanBuoi=+p.toan; if(p.tab) gvTab=p.tab; }
   veDau(); veDongHo();
